@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/style.scss"],"names":[],"mappings":"AAAA;EACE;EACA;;;AAGF;EACE;EACA;EACA;EACA","file":"style.6d80b553.css","sourceRoot":"..","sourcesContent":["* {\n  padding: 0;\n  margin: 0;\n}\n\nbody {\n  padding: 0;\n  margin: 0;\n  height: 100vh;\n  background: black;\n}\n"]}

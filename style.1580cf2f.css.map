@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/style.scss"],"names":[],"mappings":"AAKA,OAJE,SAAA,CACA,SAGF,KAGE,YAAA,CACA","file":"style.1580cf2f.css","sourceRoot":"..","sourcesContent":["* {\n  padding: 0;\n  margin: 0;\n}\n\nbody {\n  padding: 0;\n  margin: 0;\n  height: 100vh;\n  background: black;\n}\n"]}
