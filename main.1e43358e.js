@@ -46501,7 +46501,7 @@ function sceneInit() {
   light.position.set(0, 10, 0);
   scene.add(amb, light); // EFFECTS
 
-  effect = new _AsciiEffect.AsciiEffect(renderer, ' .:-#', {
+  effect = new _AsciiEffect.AsciiEffect(renderer, ' ..#', {
     invert: true
   });
   effect.setSize(window.innerWidth, window.innerHeight);
@@ -46569,7 +46569,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58899" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62845" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
