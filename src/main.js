@@ -11,9 +11,31 @@ import imagesLoaded from 'imagesloaded'
 
 const loader = new GLTFLoader()
 
+const isMobile = {
+  Android: function () {
+    return navigator.userAgent.match(/Android/i)
+  },
+  BlackBerry: function () {
+    return navigator.userAgent.match(/BlackBerry/i)
+  },
+  iOS: function () {
+    return navigator.userAgent.match(/iPhone|iPad|iPod/i)
+  },
+  Opera: function () {
+    return navigator.userAgent.match(/Opera Mini/i)
+  },
+  Windows: function () {
+    return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i)
+  },
+  any: function () {
+    return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows())
+  }
+}
+
 let scene, camera, controls, renderer, effect
 let grey, light, amb
 const body = document.querySelector('body')
+const preloader = document.querySelector('.preloader')
 scene = new THREE.Scene()
 
 // GLTF
@@ -22,22 +44,19 @@ loader.load(
 	function (gltf) {
     scene.add(gltf.scene.children[0])
     sceneInit()
+    homeLaunch()
 	}
 )
 
 const start = Date.now()
+let imgLoad = new imagesLoaded(body)
 
-let imgLoad = new imagesLoaded(body,onceLoaded())
+imgLoad.on( 'done', function( instance, image ) {
+  let tl = gsap.timeline()
+  tl
+  .to(preloader, {autoAlpha:0, duration:1}, 0.5)
 
-imgLoad.on( 'progress', function( instance, image ) {
-  var result = image.isLoaded ? 'loaded' : 'broken';
-  console.log( 'image is ' + result + ' for ' + image.img.src );
 })
-
-function onceLoaded() {
-  console.log('Loaded')
-}
-
 
 function sceneInit() {
 
@@ -50,7 +69,7 @@ function sceneInit() {
 
   // CAMERA
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight)
-  camera.position.z = 4
+  camera.position.z = 3.5
   camera.position.x = 0
   camera.position.y = 0
   scene.add(camera)
@@ -75,6 +94,14 @@ function sceneInit() {
   effect.domElement.style.left = '0px'
 
 
+  if (isMobile.any()) {
+    camera.position.z = 2
+    effect.domElement.style.position = 'fixed'
+    effect.domElement.style.color = '#E0E0E0'
+  } else {
+    effect.domElement.style.position = 'absolute'
+  }
+
   // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
   controls = new OrbitControls(camera, effect.domElement)
@@ -97,6 +124,14 @@ function sceneInit() {
 
 
   // INTRO
+  let tl = gsap.timeline()
+  tl
+  .set('.video', {autoAlpha:0, scale:0.8})
+  .set('.logo, footer', {autoAlpha:0})
+
+  .from(camera.position, {z:100, duration:2, ease:'power4.out'}, 2)
+  .to('.video', {scale:1, autoAlpha:1, duration:1.2, ease:'power4.out', stagger:{ease:'power1.in', each:0.2}}, '-=1.2')
+  .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 
 
   function animate() {
@@ -116,20 +151,35 @@ function sceneInit() {
   animate()
 }
 
-document.querySelectorAll('.video').forEach(video => {
-  video.addEventListener('click', event => {
-    let data = video.getAttribute('data')
-    openPlayer(data)
-  })
-  video.addEventListener('mouseenter', event => {
-    let player = video.querySelector('.video-player video')
-    player.play()
-  })
-  video.addEventListener('mouseleave', event => {
-    let player = video.querySelector('.video-player video')
-    player.pause()
-  })
-})
+function homeLaunch(){
+  if (isMobile.any()) {
+    document.querySelectorAll('.video').forEach(video => {
+      video.addEventListener('click', event => {
+        let data = video.getAttribute('data')
+        openPlayer(data)
+      })
+    })
+  } else {
+    document.querySelectorAll('.video').forEach(video => {
+      video.addEventListener('click', event => {
+        let data = video.getAttribute('data')
+        openPlayer(data)
+      })
+      video.addEventListener('mouseenter', event => {
+        let player = video.querySelector('.video-player video')
+        // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
+        gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
+        player.play()
+      })
+      video.addEventListener('mouseleave', event => {
+        let player = video.querySelector('.video-player video')
+        gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
+        // gsap.to(camera.position, {z:4, duration:1.2, ease:'power3.out'})
+        player.pause()
+      })
+    })
+  }
+}
 
 function openPlayer(data) {
   console.log(effect)
@@ -176,7 +226,7 @@ function openPlayer(data) {
       tl
       .set(player, {pointerEvents: 'none'})
       .to(currentText, {autoAlpha:0, duration:0.6, ease:'power2.out'})
-      .to(currentCloseAnim, {y:'-101%', duration:1, ease:'power2.out'}, '-=0.6')
+      .to(currentCloseAnim, {y:'-103%', duration:1, ease:'power2.out'}, '-=0.6')
       .to(currentPlayer, {autoAlpha:0, duration:1, ease:'power4.out'}, '-=0.8')
       .to(currentBg, {autoAlpha:0, duration:1, ease:'power4.out'}, '-=0.8')
       .add(function(){

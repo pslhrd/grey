@@ -1,16 +1,29 @@
+@mixin mobile {
+  @media (max-width: 900px) { @content; }
+}
+
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
+$main: #787878;
+$bg: #EDEDED;
+
 body {
   padding: 0;
   margin: 0;
   width: 100%;
   height: 100vh;
-  background: #EDEDED;
+  background: $bg;
   overflow: hidden;
+
+  @include mobile {
+    height: auto;
+    overflow-y: visible;
+    overflow-x: hidden;
+  }
 
   header {
     position: absolute;
@@ -20,15 +33,53 @@ body {
     z-index: 12;
 
     .wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
     .logo {
       font-family: Arial;
-      color: #787878;
-      font-size: 14px;
-      margin-top: 20px;
-      margin-left: 20px;
+      color: $main;
+      font-size: 10px;
+      margin-top: 10px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
+  }
+
+  footer {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 52px;
+    font-family: Arial;
+    text-transform: uppercase;
+    color: $main;
+    z-index: 12;
+
+    @include mobile {
+      display: none;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  .preloader {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: #E0E0E0;
+    z-index: 100;
   }
 
   .videos {
@@ -36,8 +87,31 @@ body {
     top: 0;
     left: 0;
     z-index: 10;
-    width: 100%;
+    width: 100vw;
     height: 100%;
+
+    .shop-mobile {
+      margin-top: 15vw;
+      font-family: Arial;
+      color: $main;
+      font-size: 28vw;
+      width: 100%;
+      text-align: center;
+      display: none;
+
+      @include mobile {
+        display: block;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+
+    @include mobile {
+      height: auto;
+    }
   }
 
   .vitaly1 {
@@ -45,38 +119,95 @@ body {
     left: 0;
     margin-left: 20px;
     margin-top: 7.5vw;
+    width: 20vw;
+    height: 30vw;
+
+    @include mobile {
+      margin-left: 5vw;
+      margin-top: 112px;
+    }
   }
 
   .vitaly2 {
     bottom: 0;
     left: 0;
-    margin-left: 27vw;
-    margin-bottom: 37px;
+    margin-left: 12vw;
+    margin-bottom: 10vw;
+    width: 15vw;
+    height: 15vw;
+
+    @include mobile {
+      margin-left: 5vw;
+      margin-top: 15vw;
+      margin-bottom: 0;
+    }
   }
 
   .vitaly3 {
     top: 0;
     right: 0;
-    margin-right: 20px;
+    margin-right: 15.5vw;
     margin-top: 20px;
+    width: 15vw;
+    height: 15vw;
+
+    @include mobile {
+      margin-left: 5vw;
+      margin-top: 15vw;
+      margin-bottom: 0;
+      margin-right: 0;
+    }
   }
 
   .vitaly4 {
-    bottom: 0;
+    top: 0;
     right: 0;
-    margin-right: 10vw;
-    margin-bottom: 5vw;
+    margin-right: 20px;
+    margin-top: 13vw;
+    width: 20vw;
+    height: 30vw;
+
+    @include mobile {
+      margin-left: 5vw;
+      margin-top: 15vw;
+      margin-bottom: 0;
+      margin-right: 0;
+    }
+  }
+
+  .vitaly5 {
+    bottom: 0;
+    left: 0;
+    margin-left: 35vw;
+    margin-bottom: 37px;
+    width: 17vw;
+    height: 17vw;
+
+    @include mobile {
+      margin-left: 5vw;
+      margin-top: 15vw;
+      margin-bottom: 0;
+      margin-right: 0;
+    }
   }
 
   .video {
     position: absolute;
-    width: 20vw;
-    height: 20vw;
+
+    @include mobile {
+      position: relative;
+      width: 90vw;
+      height: 90vw;
+    }
 
     &:hover {
       cursor: pointer;
       .video-thumbnail {
         opacity: 0;
+      }
+
+      .video-title {
+        opacity: 1;
       }
     }
 
@@ -98,6 +229,7 @@ body {
       transition: opacity 0.4s;
 
       img {
+        filter: grayscale(100%);
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -125,7 +257,13 @@ body {
       font-size: 11px;
       font-family: Arial;
       text-transform: uppercase;
-      color: #787878;
+      color: $main;
+      opacity: 0;
+      transition: opacity 0.4s;
+
+      @include mobile {
+        opacity: 1;
+      }
 
       span {
         display: block;
@@ -138,13 +276,13 @@ body {
     width: 100%;
     height: 100vh;
     top: 0;
-    left: 0;
-    
+    left: 0;  
   }
 
   .player {
     display: none;
-    position: absolute;
+    position: fixed;
+    top: 0;
     width: 100%;
     height: 100vh;
     z-index: 12;
@@ -171,6 +309,10 @@ body {
 
     .wrapper {
       width: 40vw;
+
+      @include mobile {
+        width: 90vw;
+      }
     }
 
     .close {
@@ -183,6 +325,11 @@ body {
       color: #E5E5E5;
       text-transform: uppercase;
       overflow: hidden;
+
+      @include mobile {
+        right: 50%;
+        transform: translateX(calc(50% + 5px));
+      }
 
       span {
         display: block;
@@ -197,6 +344,11 @@ body {
       width: 40vw;
       height: 40vw;
       overflow: hidden;
+
+      @include mobile {
+        width: 90vw;
+        height: 90vw;
+      }
 
       video {
         width: 100%;
