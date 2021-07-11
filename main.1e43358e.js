@@ -46450,7 +46450,503 @@ exports.TweenMax = TweenMaxWithCSS;
 exports.default = exports.gsap = gsapWithCSS;
 },{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"src/assets/models/grey.gltf":[function(require,module,exports) {
 module.exports = "/grey.c68acd59.gltf";
-},{}],"src/main.js":[function(require,module,exports) {
+},{}],"node_modules/ev-emitter/ev-emitter.js":[function(require,module,exports) {
+var define;
+var global = arguments[3];
+/**
+ * EvEmitter v1.1.0
+ * Lil' event emitter
+ * MIT License
+ */
+
+/* jshint unused: true, undef: true, strict: true */
+
+( function( global, factory ) {
+  // universal module definition
+  /* jshint strict: false */ /* globals define, module, window */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD - RequireJS
+    define( factory );
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory();
+  } else {
+    // Browser globals
+    global.EvEmitter = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+"use strict";
+
+function EvEmitter() {}
+
+var proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // set events hash
+  var events = this._events = this._events || {};
+  // set listeners array
+  var listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( listeners.indexOf( listener ) == -1 ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) {
+    return;
+  }
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  var onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  var onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  var index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  var listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) {
+    return;
+  }
+  // copy over to avoid interference if .off() in listener
+  listeners = listeners.slice(0);
+  args = args || [];
+  // once stuff
+  var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  for ( var i=0; i < listeners.length; i++ ) {
+    var listener = listeners[i]
+    var isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+  }
+
+  return this;
+};
+
+proto.allOff = function() {
+  delete this._events;
+  delete this._onceEvents;
+};
+
+return EvEmitter;
+
+}));
+
+},{}],"node_modules/imagesloaded/imagesloaded.js":[function(require,module,exports) {
+var define;
+/*!
+ * imagesLoaded v4.1.4
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+( function( window, factory ) { 'use strict';
+  // universal module definition
+
+  /*global define: false, module: false, require: false */
+
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+      'ev-emitter/ev-emitter'
+    ], function( EvEmitter ) {
+      return factory( window, EvEmitter );
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('ev-emitter')
+    );
+  } else {
+    // browser global
+    window.imagesLoaded = factory(
+      window,
+      window.EvEmitter
+    );
+  }
+
+})( typeof window !== 'undefined' ? window : this,
+
+// --------------------------  factory -------------------------- //
+
+function factory( window, EvEmitter ) {
+
+'use strict';
+
+var $ = window.jQuery;
+var console = window.console;
+
+// -------------------------- helpers -------------------------- //
+
+// extend objects
+function extend( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+}
+
+var arraySlice = Array.prototype.slice;
+
+// turn element or nodeList into an array
+function makeArray( obj ) {
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    return obj;
+  }
+
+  var isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  if ( isArrayLike ) {
+    // convert nodeList to array
+    return arraySlice.call( obj );
+  }
+
+  // array of single index
+  return [ obj ];
+}
+
+// -------------------------- imagesLoaded -------------------------- //
+
+/**
+ * @param {Array, Element, NodeList, String} elem
+ * @param {Object or Function} options - if function, use as callback
+ * @param {Function} onAlways - callback function
+ */
+function ImagesLoaded( elem, options, onAlways ) {
+  // coerce ImagesLoaded() without new, to be new ImagesLoaded()
+  if ( !( this instanceof ImagesLoaded ) ) {
+    return new ImagesLoaded( elem, options, onAlways );
+  }
+  // use elem as selector string
+  var queryElem = elem;
+  if ( typeof elem == 'string' ) {
+    queryElem = document.querySelectorAll( elem );
+  }
+  // bail if bad element
+  if ( !queryElem ) {
+    console.error( 'Bad element for imagesLoaded ' + ( queryElem || elem ) );
+    return;
+  }
+
+  this.elements = makeArray( queryElem );
+  this.options = extend( {}, this.options );
+  // shift arguments if no options set
+  if ( typeof options == 'function' ) {
+    onAlways = options;
+  } else {
+    extend( this.options, options );
+  }
+
+  if ( onAlways ) {
+    this.on( 'always', onAlways );
+  }
+
+  this.getImages();
+
+  if ( $ ) {
+    // add jQuery Deferred object
+    this.jqDeferred = new $.Deferred();
+  }
+
+  // HACK check async to allow time to bind listeners
+  setTimeout( this.check.bind( this ) );
+}
+
+ImagesLoaded.prototype = Object.create( EvEmitter.prototype );
+
+ImagesLoaded.prototype.options = {};
+
+ImagesLoaded.prototype.getImages = function() {
+  this.images = [];
+
+  // filter & find items if we have an item selector
+  this.elements.forEach( this.addElementImages, this );
+};
+
+/**
+ * @param {Node} element
+ */
+ImagesLoaded.prototype.addElementImages = function( elem ) {
+  // filter siblings
+  if ( elem.nodeName == 'IMG' ) {
+    this.addImage( elem );
+  }
+  // get background image on element
+  if ( this.options.background === true ) {
+    this.addElementBackgroundImages( elem );
+  }
+
+  // find children
+  // no non-element nodes, #143
+  var nodeType = elem.nodeType;
+  if ( !nodeType || !elementNodeTypes[ nodeType ] ) {
+    return;
+  }
+  var childImgs = elem.querySelectorAll('img');
+  // concat childElems to filterFound array
+  for ( var i=0; i < childImgs.length; i++ ) {
+    var img = childImgs[i];
+    this.addImage( img );
+  }
+
+  // get child background images
+  if ( typeof this.options.background == 'string' ) {
+    var children = elem.querySelectorAll( this.options.background );
+    for ( i=0; i < children.length; i++ ) {
+      var child = children[i];
+      this.addElementBackgroundImages( child );
+    }
+  }
+};
+
+var elementNodeTypes = {
+  1: true,
+  9: true,
+  11: true
+};
+
+ImagesLoaded.prototype.addElementBackgroundImages = function( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    // Firefox returns null if in a hidden iframe https://bugzil.la/548397
+    return;
+  }
+  // get url inside url("...")
+  var reURL = /url\((['"])?(.*?)\1\)/gi;
+  var matches = reURL.exec( style.backgroundImage );
+  while ( matches !== null ) {
+    var url = matches && matches[2];
+    if ( url ) {
+      this.addBackground( url, elem );
+    }
+    matches = reURL.exec( style.backgroundImage );
+  }
+};
+
+/**
+ * @param {Image} img
+ */
+ImagesLoaded.prototype.addImage = function( img ) {
+  var loadingImage = new LoadingImage( img );
+  this.images.push( loadingImage );
+};
+
+ImagesLoaded.prototype.addBackground = function( url, elem ) {
+  var background = new Background( url, elem );
+  this.images.push( background );
+};
+
+ImagesLoaded.prototype.check = function() {
+  var _this = this;
+  this.progressedCount = 0;
+  this.hasAnyBroken = false;
+  // complete if no images
+  if ( !this.images.length ) {
+    this.complete();
+    return;
+  }
+
+  function onProgress( image, elem, message ) {
+    // HACK - Chrome triggers event before object properties have changed. #83
+    setTimeout( function() {
+      _this.progress( image, elem, message );
+    });
+  }
+
+  this.images.forEach( function( loadingImage ) {
+    loadingImage.once( 'progress', onProgress );
+    loadingImage.check();
+  });
+};
+
+ImagesLoaded.prototype.progress = function( image, elem, message ) {
+  this.progressedCount++;
+  this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+  // progress event
+  this.emitEvent( 'progress', [ this, image, elem ] );
+  if ( this.jqDeferred && this.jqDeferred.notify ) {
+    this.jqDeferred.notify( this, image );
+  }
+  // check if completed
+  if ( this.progressedCount == this.images.length ) {
+    this.complete();
+  }
+
+  if ( this.options.debug && console ) {
+    console.log( 'progress: ' + message, image, elem );
+  }
+};
+
+ImagesLoaded.prototype.complete = function() {
+  var eventName = this.hasAnyBroken ? 'fail' : 'done';
+  this.isComplete = true;
+  this.emitEvent( eventName, [ this ] );
+  this.emitEvent( 'always', [ this ] );
+  if ( this.jqDeferred ) {
+    var jqMethod = this.hasAnyBroken ? 'reject' : 'resolve';
+    this.jqDeferred[ jqMethod ]( this );
+  }
+};
+
+// --------------------------  -------------------------- //
+
+function LoadingImage( img ) {
+  this.img = img;
+}
+
+LoadingImage.prototype = Object.create( EvEmitter.prototype );
+
+LoadingImage.prototype.check = function() {
+  // If complete is true and browser supports natural sizes,
+  // try to check for image status manually.
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    // report based on naturalWidth
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    return;
+  }
+
+  // If none of the checks above matched, simulate loading on detached element.
+  this.proxyImage = new Image();
+  this.proxyImage.addEventListener( 'load', this );
+  this.proxyImage.addEventListener( 'error', this );
+  // bind to image as well for Firefox. #191
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.proxyImage.src = this.img.src;
+};
+
+LoadingImage.prototype.getIsImageComplete = function() {
+  // check for non-zero, non-undefined naturalWidth
+  // fixes Safari+InfiniteScroll+Masonry bug infinite-scroll#671
+  return this.img.complete && this.img.naturalWidth;
+};
+
+LoadingImage.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.img, message ] );
+};
+
+// ----- events ----- //
+
+// trigger specified handler for event type
+LoadingImage.prototype.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+LoadingImage.prototype.onload = function() {
+  this.confirm( true, 'onload' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.onerror = function() {
+  this.confirm( false, 'onerror' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.unbindEvents = function() {
+  this.proxyImage.removeEventListener( 'load', this );
+  this.proxyImage.removeEventListener( 'error', this );
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+// -------------------------- Background -------------------------- //
+
+function Background( url, element ) {
+  this.url = url;
+  this.element = element;
+  this.img = new Image();
+}
+
+// inherit LoadingImage prototype
+Background.prototype = Object.create( LoadingImage.prototype );
+
+Background.prototype.check = function() {
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.img.src = this.url;
+  // check if image is already complete
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    this.unbindEvents();
+  }
+};
+
+Background.prototype.unbindEvents = function() {
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+Background.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.element, message ] );
+};
+
+// -------------------------- jQuery -------------------------- //
+
+ImagesLoaded.makeJQueryPlugin = function( jQuery ) {
+  jQuery = jQuery || window.jQuery;
+  if ( !jQuery ) {
+    return;
+  }
+  // set local variable
+  $ = jQuery;
+  // $().imagesLoaded()
+  $.fn.imagesLoaded = function( options, callback ) {
+    var instance = new ImagesLoaded( this, options, callback );
+    return instance.jqDeferred.promise( $(this) );
+  };
+};
+// try making plugin
+ImagesLoaded.makeJQueryPlugin();
+
+// --------------------------  -------------------------- //
+
+return ImagesLoaded;
+
+});
+
+},{"ev-emitter":"node_modules/ev-emitter/ev-emitter.js"}],"src/main.js":[function(require,module,exports) {
 "use strict";
 
 var THREE = _interopRequireWildcard(require("three"));
@@ -46467,6 +46963,8 @@ var _gsap = _interopRequireDefault(require("gsap"));
 
 var _grey = _interopRequireDefault(require("/src/assets/models/grey.gltf"));
 
+var _imagesloaded = _interopRequireDefault(require("imagesloaded"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -46476,6 +46974,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var loader = new _GLTFLoader.GLTFLoader();
 var scene, camera, controls, renderer, effect;
 var grey, light, amb;
+var body = document.querySelector('body');
 scene = new THREE.Scene(); // GLTF
 
 loader.load(_grey.default, function (gltf) {
@@ -46483,31 +46982,44 @@ loader.load(_grey.default, function (gltf) {
   sceneInit();
 });
 var start = Date.now();
+var imgLoad = new _imagesloaded.default(body, onceLoaded());
+imgLoad.on('progress', function (instance, image) {
+  var result = image.isLoaded ? 'loaded' : 'broken';
+  console.log('image is ' + result + ' for ' + image.img.src);
+});
+
+function onceLoaded() {
+  console.log('Loaded');
+}
 
 function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight); // document.body.appendChild(renderer.domElement)
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(1); // document.body.appendChild(renderer.domElement)
   // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
-  camera.position.z = 6;
+  camera.position.z = 4;
   camera.position.x = 0;
   camera.position.y = 0;
   scene.add(camera); // LIGHTS
 
   light = new THREE.PointLight(0xffffff, 1.8, 0, 1);
   amb = new THREE.AmbientLight(0xffffff, 0.5);
-  light.position.set(0, 10, 0);
+  light.position.set(5, 5, 0);
   scene.add(amb, light); // EFFECTS
 
-  effect = new _AsciiEffect.AsciiEffect(renderer, ' ..#', {
+  effect = new _AsciiEffect.AsciiEffect(renderer, ' .-#', {
     invert: true
   });
   effect.setSize(window.innerWidth, window.innerHeight);
-  effect.domElement.style.color = 'white';
-  effect.domElement.style.backgroundColor = 'black';
-  document.body.appendChild(effect.domElement); // CONTROLS
+  effect.domElement.style.color = '#B0B0B0';
+  effect.domElement.style.backgroundColor = '#EDEDED';
+  document.body.appendChild(effect.domElement);
+  effect.domElement.style.position = 'absolute';
+  effect.domElement.style.top = '0px';
+  effect.domElement.style.left = '0px'; // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
 
   controls = new _OrbitControls.OrbitControls(camera, effect.domElement);
@@ -46525,7 +47037,7 @@ function sceneInit() {
   }
 
   window.addEventListener('resize', onWindowResize, false);
-  grey = scene.children[0];
+  grey = scene.children[0]; // INTRO
 
   function animate() {
     requestAnimationFrame(animate);
@@ -46536,12 +47048,119 @@ function sceneInit() {
     var timer = Date.now() - start;
     controls.update();
     effect.render(scene, camera);
-    grey.rotation.y = timer * 0.0006;
+    grey.rotation.y = timer * 0.0005;
   }
 
   animate();
 }
-},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey.gltf":"src/assets/models/grey.gltf"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+document.querySelectorAll('.video').forEach(function (video) {
+  video.addEventListener('click', function (event) {
+    var data = video.getAttribute('data');
+    openPlayer(data);
+  });
+  video.addEventListener('mouseenter', function (event) {
+    var player = video.querySelector('.video-player video');
+    player.play();
+  });
+  video.addEventListener('mouseleave', function (event) {
+    var player = video.querySelector('.video-player video');
+    player.pause();
+  });
+});
+
+function openPlayer(data) {
+  console.log(effect);
+  document.querySelectorAll('.player').forEach(function (player) {
+    var playerData = player.getAttribute('data');
+    var currentVideo = player.querySelector('.player-video');
+    var currentPlayer = player.querySelector('.player-video video');
+    var currentText = player.querySelectorAll('.player-content span');
+    var currentBg = player.querySelector('.player-background');
+    var currentClose = player.querySelector('.close');
+    var currentCloseAnim = player.querySelector('.close span');
+    var videoStatus;
+
+    if (playerData === data) {
+      var tl = _gsap.default.timeline();
+
+      tl.set(currentBg, {
+        autoAlpha: 0
+      }).set(currentPlayer, {
+        autoAlpha: 0,
+        scale: 1.2
+      }).set(currentText, {
+        y: '100%',
+        autoAlpha: 1
+      }).set(currentCloseAnim, {
+        y: '101%',
+        autoAlpha: 1
+      }).add(function () {
+        player.style.display = 'block';
+      }).to(currentBg, {
+        autoAlpha: 1,
+        duration: 1,
+        ease: 'power4.out'
+      }).to(currentPlayer, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 1.2,
+        ease: 'power4.out'
+      }, '-=0.9').to(currentCloseAnim, {
+        y: '0%',
+        duration: 1.2,
+        ease: 'power4.out'
+      }, '-=0.9').to(currentText, {
+        y: '0%',
+        duration: 1,
+        ease: 'power4.out',
+        stagger: 0.2
+      }, '-=0.8');
+    }
+
+    currentVideo.addEventListener('click', function (event) {
+      console.log(currentPlayer);
+
+      if (videoStatus === 'playing') {
+        currentPlayer.pause();
+        videoStatus = 'paused';
+      } else {
+        currentPlayer.play();
+        videoStatus = 'playing';
+      }
+    });
+    currentClose.addEventListener('click', function (event) {
+      var tl = _gsap.default.timeline();
+
+      tl.set(player, {
+        pointerEvents: 'none'
+      }).to(currentText, {
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }).to(currentCloseAnim, {
+        y: '-101%',
+        duration: 1,
+        ease: 'power2.out'
+      }, '-=0.6').to(currentPlayer, {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power4.out'
+      }, '-=0.8').to(currentBg, {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power4.out'
+      }, '-=0.8').add(function () {
+        player.style.display = 'none';
+        player.style.pointerEvents = 'all';
+        currentPlayer.pause();
+        currentPlayer.currentTime = 0;
+        videoStatus = 'stopped';
+      });
+    });
+  });
+}
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey.gltf":"src/assets/models/grey.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -46569,7 +47188,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62845" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53161" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
