@@ -133,9 +133,7 @@ function sceneInit() {
 
 
   if (isMobile.any()) {
-    camera.position.z = 10
-  } else {
-    effect.domElement.style.position = 'absolute'
+    camera.position.z = 8
   }
 
   // CONTROLS
@@ -267,7 +265,7 @@ function openPlayer(data) {
       .set(currentPlayer, {autoAlpha:0, scale:1})
       .set(currentText, {y:'100%', autoAlpha:1})
       .set(currentCloseAnim, {y:'101%', autoAlpha:1})
-      .add(function(){player.style.display = 'block'})
+      .add(function(){player.style.display = 'block'; currentTap.style.display = 'block'})
       .to(currentBg, {autoAlpha:1, duration:0.8, ease:'power2.out'})
       .to(currentPlayer, {autoAlpha:1, scale:1, duration:1.2, ease:'power4.out'}, '-=0.7')
       .to(currentCloseAnim, {y:'0%', duration:1.2, ease:'power4.out'}, '-=0.9')      
