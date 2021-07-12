@@ -8,7 +8,7 @@ import gsap from 'gsap'
 import greyModel from '/src/assets/models/grey.gltf'
 import imagesLoaded from 'imagesloaded'
 
-
+function lerp (start, end, amt) { return (1 - amt) * start + amt * end }
 const loader = new GLTFLoader()
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 const isMobile = {
@@ -33,7 +33,7 @@ const isMobile = {
 }
 
 let scene, camera, controls, renderer, effect
-let grey, light, amb
+let grey, light, amb, mouseX, mouseY
 const body = document.querySelector('body')
 const preloader = document.querySelector('.preloader')
 scene = new THREE.Scene()
@@ -64,6 +64,7 @@ imgLoad.on( 'done', function( instance, image ) {
 })
 
 function sceneInit() {
+
 
   // RENDERER
   renderer = new THREE.WebGLRenderer()
@@ -110,11 +111,11 @@ function sceneInit() {
 
   // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
-  controls = new OrbitControls(camera, effect.domElement)
-  controls.enableZoom = true
-  controls.enablePan = true
-  controls.enableDamping = true
-  controls.dampingFactor = 0.085
+  // controls = new OrbitControls(camera, effect.domElement)
+  // controls.enableZoom = true
+  // controls.enablePan = true
+  // controls.enableDamping = true
+  // controls.dampingFactor = 0.085
 
   function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight )
@@ -125,6 +126,18 @@ function sceneInit() {
   }
 
   window.addEventListener('resize', onWindowResize, false)
+
+  const cursor = new THREE.Vector2()
+  const mouse = { x: 0, y: 0, target: null }
+
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX / window.innerWidth * 2 - 1
+    mouse.y = e.clientY / window.innerHeight * 2 - 1
+    mouse.target = e.target
+  })
+
+  const cameraLookingAt = new THREE.Vector3(mouse.x, mouse.y, 0)
+  camera.lookAt(cameraLookingAt)
 
   grey = scene.children[0]
 
@@ -148,7 +161,12 @@ function sceneInit() {
   function render() {
     const timer = Date.now() - start
 
-    controls.update()
+    cameraLookingAt.set(
+      lerp(cameraLookingAt.x, mouse.x/3, 0.05),0,0
+    )
+    camera.lookAt(cameraLookingAt)
+
+    // controls.update()
     effect.render(scene, camera)
 
     grey.rotation.y = timer * 0.0005
@@ -160,7 +178,8 @@ function sceneInit() {
 function homeLaunch(){
   if (isMobile.any()) {
     document.querySelectorAll('.video').forEach(video => {
-      video.addEventListener('click', event => {
+      video.addEventListener('touchstart', event => {
+        event.preventDefault()
         let data = video.getAttribute('data')
         openPlayer(data)
       })
@@ -174,13 +193,12 @@ function homeLaunch(){
       video.addEventListener('mouseenter', event => {
         let player = video.querySelector('.video-player video')
         // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
-        // gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
+        gsap.to(grey.rotation, {x:1, duration:2, ease:'elastic.out'})
         player.play()
       })
       video.addEventListener('mouseleave', event => {
         let player = video.querySelector('.video-player video')
-        // gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
-        // gsap.to(camera.position, {z:4, duration:1.2, ease:'power3.out'})
+        gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
         player.pause()
       })
     })
