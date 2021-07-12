@@ -46448,8 +46448,8 @@ TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
 exports.TweenMax = TweenMaxWithCSS;
 exports.default = exports.gsap = gsapWithCSS;
-},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"src/assets/models/grey.gltf":[function(require,module,exports) {
-module.exports = "/grey.c68acd59.gltf";
+},{"./gsap-core.js":"node_modules/gsap/gsap-core.js","./CSSPlugin.js":"node_modules/gsap/CSSPlugin.js"}],"src/assets/models/grey2.gltf":[function(require,module,exports) {
+module.exports = "/grey2.dd2b7ece.gltf";
 },{}],"node_modules/ev-emitter/ev-emitter.js":[function(require,module,exports) {
 var define;
 var global = arguments[3];
@@ -46961,7 +46961,7 @@ var _TrackballControls = require("three/examples/jsm/controls/TrackballControls"
 
 var _gsap = _interopRequireDefault(require("gsap"));
 
-var _grey = _interopRequireDefault(require("/src/assets/models/grey.gltf"));
+var _grey = _interopRequireDefault(require("/src/assets/models/grey2.gltf"));
 
 var _imagesloaded = _interopRequireDefault(require("imagesloaded"));
 
@@ -46998,7 +46998,7 @@ var isMobile = {
   }
 };
 var scene, camera, controls, renderer, effect;
-var grey, light, amb, mouseX, mouseY;
+var grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4;
 var body = document.querySelector('body');
 var preloader = document.querySelector('.preloader');
 scene = new THREE.Scene(); // GLTF
@@ -47008,11 +47008,35 @@ loader.load(_grey.default, function (gltf) {
 
   if (isSafari === true) {
     homeLaunch();
+    menuLaunch(); // sceneInit()
   } else {
     sceneInit();
-    homeLaunch();
+    menuLaunch();
+    homeLaunch(); // movingImages()
   }
 });
+
+function createParticleSystem(n) {
+  var particles = new THREE.BufferGeometry();
+  var vertices = [];
+  var pMaterial = new THREE.PointsMaterial({
+    color: 0xFFFFFF,
+    opacity: 0.15,
+    size: 0.1,
+    transparent: true
+  });
+
+  for (var p = 0; p < n; p++) {
+    var pX = Math.random() * 20 - 10;
+    var pY = Math.random() * 20 - 10;
+    var pZ = Math.random() * 20 - 10;
+    vertices.push(pX, pY, pZ);
+  }
+
+  particles.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  return new THREE.Points(particles, pMaterial);
+}
+
 var start = Date.now();
 var imgLoad = new _imagesloaded.default(body);
 imgLoad.on('done', function (instance, image) {
@@ -47032,12 +47056,15 @@ function sceneInit() {
   // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
-  camera.position.z = 3.5;
+  camera.position.z = 5;
   camera.position.x = 0;
   camera.position.y = 0;
-  scene.add(camera); // LIGHTS
+  scene.add(camera); // PARTICLES
 
-  light = new THREE.PointLight(0xffffff, 1.8, 0, 1);
+  var particles = createParticleSystem(200);
+  scene.add(particles); // LIGHTS
+
+  light = new THREE.PointLight(0xffffff, 2, 0, 1);
   amb = new THREE.AmbientLight(0xffffff, 0.5);
   light.position.set(5, 5, 0);
   scene.add(amb, light); // EFFECTS
@@ -47046,8 +47073,8 @@ function sceneInit() {
     invert: true
   });
   effect.setSize(window.innerWidth, window.innerHeight);
-  effect.domElement.style.color = '#B0B0B0';
-  effect.domElement.style.backgroundColor = '#EDEDED';
+  effect.domElement.style.color = '#454545';
+  effect.domElement.style.backgroundColor = 'none';
   document.body.appendChild(effect.domElement);
   effect.domElement.style.position = 'absolute';
   effect.domElement.style.top = '0px';
@@ -47055,9 +47082,7 @@ function sceneInit() {
   effect.domElement.style.zIndex = '1';
 
   if (isMobile.any()) {
-    camera.position.z = 2;
-    effect.domElement.style.position = 'fixed';
-    effect.domElement.style.color = '#E0E0E0';
+    camera.position.z = 10;
   } else {
     effect.domElement.style.position = 'absolute';
   } // CONTROLS
@@ -47078,24 +47103,17 @@ function sceneInit() {
   }
 
   window.addEventListener('resize', onWindowResize, false);
-  var cursor = new THREE.Vector2();
-  var mouse = {
-    x: 0,
-    y: 0,
-    target: null
-  };
-  window.addEventListener('mousemove', function (e) {
-    mouse.x = e.clientX / window.innerWidth * 2 - 1;
-    mouse.y = e.clientY / window.innerHeight * 2 - 1;
-    mouse.target = e.target;
-  });
-  var cameraLookingAt = new THREE.Vector3(mouse.x, mouse.y, 0);
-  camera.lookAt(cameraLookingAt);
-  grey = scene.children[0]; // INTRO
+  grey = scene.children[0];
+  letter1 = grey.children[0];
+  letter2 = grey.children[1];
+  letter3 = grey.children[2];
+  letter4 = grey.children[3]; // INTRO
 
   var tl = _gsap.default.timeline();
 
-  tl.set('.video', {
+  tl.set('.menu ul li', {
+    autoAlpha: 0
+  }).set('.video', {
     autoAlpha: 0,
     scale: 0.8
   }).set('.logo, footer', {
@@ -47113,7 +47131,12 @@ function sceneInit() {
       ease: 'power1.in',
       each: 0.2
     }
-  }, '-=1.2').to('.logo, footer', {
+  }, '-=1.2').to('.menu ul li', {
+    autoAlpha: 1,
+    duration: 1.2,
+    ease: 'power3.out',
+    stagger: 0.1
+  }, '-=2').to('.logo, footer', {
     autoAlpha: 1,
     duration: 1.2,
     ease: 'power4.out',
@@ -47127,9 +47150,6 @@ function sceneInit() {
 
   function render() {
     var timer = Date.now() - start;
-    cameraLookingAt.set(lerp(cameraLookingAt.x, mouse.x / 3, 0.05), 0, 0);
-    camera.lookAt(cameraLookingAt); // controls.update()
-
     effect.render(scene, camera);
     grey.rotation.y = timer * 0.0005;
   }
@@ -47140,47 +47160,80 @@ function sceneInit() {
 function homeLaunch() {
   if (isMobile.any()) {
     document.querySelectorAll('.video').forEach(function (video) {
-      video.addEventListener('touchstart', function (event) {
+      video.addEventListener('click', function (event) {
         event.preventDefault();
         var data = video.getAttribute('data');
         openPlayer(data);
       });
     });
   } else {
-    document.querySelectorAll('.video').forEach(function (video) {
+    document.querySelectorAll('.menu ul li').forEach(function (video) {
       video.addEventListener('click', function (event) {
         var data = video.getAttribute('data');
         openPlayer(data);
-      });
-      video.addEventListener('mouseenter', function (event) {
-        var player = video.querySelector('.video-player video'); // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
-
-        _gsap.default.to(grey.rotation, {
-          x: 1,
-          duration: 2,
-          ease: 'elastic.out'
-        });
-
-        player.play();
-      });
-      video.addEventListener('mouseleave', function (event) {
-        var player = video.querySelector('.video-player video');
-
-        _gsap.default.to(grey.rotation, {
-          x: 0,
-          duration: 2,
-          ease: 'elastic.out'
-        });
-
-        player.pause();
       });
     });
   }
 }
 
+function menuLaunch() {
+  document.querySelectorAll('.menu ul li').forEach(function (links) {
+    var videos = document.querySelectorAll('.video');
+    links.addEventListener('mouseenter', function (event) {
+      var menuData = links.getAttribute('data');
+      videos.forEach(function (video) {
+        var videoData = video.getAttribute('data');
+
+        if (menuData === videoData) {
+          if (isMobile) {
+            _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
+              x: 0
+            }, {
+              x: -Math.PI * 2,
+              duration: 2,
+              ease: 'expo.out',
+              stagger: 0.1
+            });
+          }
+
+          _gsap.default.set(video, {
+            autoAlpha: 0
+          });
+
+          video.querySelector('video').play();
+          video.style.display = 'block';
+
+          _gsap.default.to(video, {
+            autoAlpha: 1,
+            duration: 0.6
+          });
+        }
+      });
+    });
+    links.addEventListener('mouseleave', function (event) {
+      var menuData = links.getAttribute('data');
+      videos.forEach(function (video) {
+        var videoData = video.getAttribute('data');
+
+        if (menuData === videoData) {
+          video.querySelector('video').pause();
+
+          _gsap.default.set(video, {
+            autoAlpha: 0
+          });
+
+          video.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
 function openPlayer(data) {
   console.log(effect);
   document.querySelectorAll('.player').forEach(function (player) {
+    var tl = _gsap.default.timeline();
+
     var playerData = player.getAttribute('data');
     var currentVideo = player.querySelector('.player-video');
     var currentPlayer = player.querySelector('.player-video video');
@@ -47188,16 +47241,17 @@ function openPlayer(data) {
     var currentBg = player.querySelector('.player-background');
     var currentClose = player.querySelector('.close');
     var currentCloseAnim = player.querySelector('.close span');
+    var currentTap = player.querySelector('.tap');
     var videoStatus;
 
     if (playerData === data) {
-      var tl = _gsap.default.timeline();
-
+      tl.kill();
+      tl = _gsap.default.timeline();
       tl.set(currentBg, {
         autoAlpha: 0
       }).set(currentPlayer, {
         autoAlpha: 0,
-        scale: 1.2
+        scale: 1
       }).set(currentText, {
         y: '100%',
         autoAlpha: 1
@@ -47208,14 +47262,14 @@ function openPlayer(data) {
         player.style.display = 'block';
       }).to(currentBg, {
         autoAlpha: 1,
-        duration: 1,
-        ease: 'power4.out'
+        duration: 0.8,
+        ease: 'power2.out'
       }).to(currentPlayer, {
         autoAlpha: 1,
         scale: 1,
         duration: 1.2,
         ease: 'power4.out'
-      }, '-=0.9').to(currentCloseAnim, {
+      }, '-=0.7').to(currentCloseAnim, {
         y: '0%',
         duration: 1.2,
         ease: 'power4.out'
@@ -47236,11 +47290,13 @@ function openPlayer(data) {
       } else {
         currentPlayer.play();
         videoStatus = 'playing';
+        currentTap.style.display = 'none';
       }
     });
     currentClose.addEventListener('click', function (event) {
-      var tl = _gsap.default.timeline();
-
+      tl.kill();
+      currentTap.style.display = 'none';
+      tl = _gsap.default.timeline();
       tl.set(player, {
         pointerEvents: 'none'
       }).to(currentText, {
@@ -47248,17 +47304,17 @@ function openPlayer(data) {
         duration: 0.6,
         ease: 'power2.out'
       }).to(currentCloseAnim, {
-        y: '-103%',
+        y: '-110%',
         duration: 1,
         ease: 'power2.out'
       }, '-=0.6').to(currentPlayer, {
         autoAlpha: 0,
         duration: 1,
-        ease: 'power4.out'
+        ease: 'power2.out'
       }, '-=0.8').to(currentBg, {
         autoAlpha: 0,
         duration: 1,
-        ease: 'power4.out'
+        ease: 'power2.out'
       }, '-=0.8').add(function () {
         player.style.display = 'none';
         player.style.pointerEvents = 'all';
@@ -47269,7 +47325,24 @@ function openPlayer(data) {
     });
   });
 }
-},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey.gltf":"src/assets/models/grey.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function movingImages() {
+  document.querySelectorAll('.video').forEach(function (video) {
+    var speed = video.getAttribute('speed');
+    document.addEventListener('mousemove', function (event) {
+      var xPos = event.clientX / window.innerWidth - 0.5,
+          yPos = event.clientY / window.innerHeight - 0.5;
+
+      _gsap.default.to(video, {
+        y: -yPos * speed,
+        x: -xPos * speed,
+        ease: 'power1.out',
+        duration: 0.8
+      });
+    });
+  });
+}
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -47297,7 +47370,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52605" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49633" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

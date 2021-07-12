@@ -184,12 +184,12 @@ function reloadCSS() {
 }
 
 module.exports = reloadCSS;
-},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"src/style.scss":[function(require,module,exports) {
+},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"src/assets/fonts/fonts.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./MonumentGrotesk-Bold.woff":[["MonumentGrotesk-Bold.0408a713.woff","src/assets/fonts/MonumentGrotesk-Bold.woff"],"src/assets/fonts/MonumentGrotesk-Bold.woff"],"./Snell-Roundhand-Regular.woff":[["Snell-Roundhand-Regular.1b9d3c6d.woff","src/assets/fonts/Snell-Roundhand-Regular.woff"],"src/assets/fonts/Snell-Roundhand-Regular.woff"],"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -394,4 +394,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/style.6d80b553.js.map
+//# sourceMappingURL=/fonts.b7327172.js.map
