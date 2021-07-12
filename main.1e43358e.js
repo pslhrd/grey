@@ -46971,6 +46971,10 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+function lerp(start, end, amt) {
+  return (1 - amt) * start + amt * end;
+}
+
 var loader = new _GLTFLoader.GLTFLoader();
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var isMobile = {
@@ -46994,7 +46998,7 @@ var isMobile = {
   }
 };
 var scene, camera, controls, renderer, effect;
-var grey, light, amb;
+var grey, light, amb, mouseX, mouseY;
 var body = document.querySelector('body');
 var preloader = document.querySelector('.preloader');
 scene = new THREE.Scene(); // GLTF
@@ -47017,7 +47021,7 @@ imgLoad.on('done', function (instance, image) {
   tl.to(preloader, {
     autoAlpha: 0,
     duration: 1
-  }, 0.5);
+  }, 1);
 });
 
 function sceneInit() {
@@ -47058,13 +47062,12 @@ function sceneInit() {
     effect.domElement.style.position = 'absolute';
   } // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
+  // controls = new OrbitControls(camera, effect.domElement)
+  // controls.enableZoom = true
+  // controls.enablePan = true
+  // controls.enableDamping = true
+  // controls.dampingFactor = 0.085
 
-
-  controls = new _OrbitControls.OrbitControls(camera, effect.domElement);
-  controls.enableZoom = true;
-  controls.enablePan = true;
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.085;
 
   function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -47075,6 +47078,19 @@ function sceneInit() {
   }
 
   window.addEventListener('resize', onWindowResize, false);
+  var cursor = new THREE.Vector2();
+  var mouse = {
+    x: 0,
+    y: 0,
+    target: null
+  };
+  window.addEventListener('mousemove', function (e) {
+    mouse.x = e.clientX / window.innerWidth * 2 - 1;
+    mouse.y = e.clientY / window.innerHeight * 2 - 1;
+    mouse.target = e.target;
+  });
+  var cameraLookingAt = new THREE.Vector3(mouse.x, mouse.y, 0);
+  camera.lookAt(cameraLookingAt);
   grey = scene.children[0]; // INTRO
 
   var tl = _gsap.default.timeline();
@@ -47111,7 +47127,9 @@ function sceneInit() {
 
   function render() {
     var timer = Date.now() - start;
-    controls.update();
+    cameraLookingAt.set(lerp(cameraLookingAt.x, mouse.x / 3, 0.05), 0, 0);
+    camera.lookAt(cameraLookingAt); // controls.update()
+
     effect.render(scene, camera);
     grey.rotation.y = timer * 0.0005;
   }
@@ -47122,7 +47140,8 @@ function sceneInit() {
 function homeLaunch() {
   if (isMobile.any()) {
     document.querySelectorAll('.video').forEach(function (video) {
-      video.addEventListener('click', function (event) {
+      video.addEventListener('touchstart', function (event) {
+        event.preventDefault();
         var data = video.getAttribute('data');
         openPlayer(data);
       });
@@ -47198,46 +47217,92 @@ function openPlayer(data) {
       }, '-=0.8');
     }
 
-    currentVideo.addEventListener('click', function (event) {
-      console.log(currentPlayer);
+    if (isMobile.any()) {
+      currentVideo.addEventListener('click', function (event) {
+        console.log(currentPlayer);
 
-      if (videoStatus === 'playing') {
-        currentPlayer.pause();
-        videoStatus = 'paused';
-      } else {
-        currentPlayer.play();
-        videoStatus = 'playing';
-      }
-    });
-    currentClose.addEventListener('click', function (event) {
-      var tl = _gsap.default.timeline();
-
-      tl.set(player, {
-        pointerEvents: 'none'
-      }).to(currentText, {
-        autoAlpha: 0,
-        duration: 0.6,
-        ease: 'power2.out'
-      }).to(currentCloseAnim, {
-        y: '-103%',
-        duration: 1,
-        ease: 'power2.out'
-      }, '-=0.6').to(currentPlayer, {
-        autoAlpha: 0,
-        duration: 1,
-        ease: 'power4.out'
-      }, '-=0.8').to(currentBg, {
-        autoAlpha: 0,
-        duration: 1,
-        ease: 'power4.out'
-      }, '-=0.8').add(function () {
-        player.style.display = 'none';
-        player.style.pointerEvents = 'all';
-        currentPlayer.pause();
-        currentPlayer.currentTime = 0;
-        videoStatus = 'stopped';
+        if (videoStatus === 'playing') {
+          currentPlayer.pause();
+          videoStatus = 'paused';
+        } else {
+          currentPlayer.play();
+          videoStatus = 'playing';
+        }
       });
-    });
+      currentClose.addEventListener('click', function (event) {
+        var tl = _gsap.default.timeline();
+
+        tl.set(player, {
+          pointerEvents: 'none'
+        }).to(currentText, {
+          autoAlpha: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        }).to(currentCloseAnim, {
+          y: '-103%',
+          duration: 1,
+          ease: 'power2.out'
+        }, '-=0.6').to(currentPlayer, {
+          autoAlpha: 0,
+          duration: 1,
+          ease: 'power4.out'
+        }, '-=0.8').to(currentBg, {
+          autoAlpha: 0,
+          duration: 1,
+          ease: 'power4.out'
+        }, '-=0.8').add(function () {
+          player.style.display = 'none';
+          player.style.pointerEvents = 'all';
+          currentPlayer.pause();
+          currentPlayer.currentTime = 0;
+          videoStatus = 'stopped';
+        });
+      });
+    } else {
+      currentVideo.addEventListener('touchstart', function (event) {
+        event.preventDefault();
+        console.log(currentPlayer);
+
+        if (videoStatus === 'playing') {
+          currentPlayer.pause();
+          videoStatus = 'paused';
+        } else {
+          currentPlayer.play();
+          videoStatus = 'playing';
+        }
+      });
+      currentClose.addEventListener('touchstart', function (event) {
+        event.preventDefault();
+
+        var tl = _gsap.default.timeline();
+
+        tl.set(player, {
+          pointerEvents: 'none'
+        }).to(currentText, {
+          autoAlpha: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        }).to(currentCloseAnim, {
+          y: '-103%',
+          duration: 1,
+          ease: 'power2.out'
+        }, '-=0.6').to(currentPlayer, {
+          autoAlpha: 0,
+          duration: 1,
+          ease: 'power4.out'
+        }, '-=0.8').to(currentBg, {
+          autoAlpha: 0,
+          duration: 1,
+          ease: 'power4.out'
+        }, '-=0.8').add(function () {
+          player.style.display = 'none';
+          player.style.pointerEvents = 'all';
+          currentPlayer.pause();
+          currentPlayer.currentTime = 0;
+          videoStatus = 'stopped';
+        });
+      });
+    }
   });
 }
 },{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey.gltf":"src/assets/models/grey.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -47268,7 +47333,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56287" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57673" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
