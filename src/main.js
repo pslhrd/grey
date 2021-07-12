@@ -10,7 +10,7 @@ import imagesLoaded from 'imagesloaded'
 
 
 const loader = new GLTFLoader()
-
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 const isMobile = {
   Android: function () {
     return navigator.userAgent.match(/Android/i)
@@ -43,8 +43,13 @@ loader.load(
 	greyModel,
 	function (gltf) {
     scene.add(gltf.scene.children[0])
-    sceneInit()
-    homeLaunch()
+    // sceneInit()
+    if (isSafari === true){
+      homeLaunch()
+    } else {
+      sceneInit()
+      homeLaunch()
+    }
 	}
 )
 
@@ -63,7 +68,7 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer()
   renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(1)
+  renderer.setPixelRatio(0.1)
   // document.body.appendChild(renderer.domElement)
 
 
@@ -92,6 +97,7 @@ function sceneInit() {
   effect.domElement.style.position = 'absolute'
   effect.domElement.style.top = '0px'
   effect.domElement.style.left = '0px'
+  effect.domElement.style.zIndex = '1'
 
 
   if (isMobile.any()) {
@@ -168,12 +174,12 @@ function homeLaunch(){
       video.addEventListener('mouseenter', event => {
         let player = video.querySelector('.video-player video')
         // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
-        gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
+        // gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
         player.play()
       })
       video.addEventListener('mouseleave', event => {
         let player = video.querySelector('.video-player video')
-        gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
+        // gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
         // gsap.to(camera.position, {z:4, duration:1.2, ease:'power3.out'})
         player.pause()
       })
