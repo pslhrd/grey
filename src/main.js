@@ -178,7 +178,7 @@ function sceneInit() {
 function homeLaunch(){
   if (isMobile.any()) {
     document.querySelectorAll('.video').forEach(video => {
-      video.addEventListener('touchstart', event => {
+      video.addEventListener('click', event => {
         event.preventDefault()
         let data = video.getAttribute('data')
         openPlayer(data)

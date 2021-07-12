@@ -361,6 +361,11 @@ body {
         color: #E5E5E5;
         font-size: 24px;
         margin-top: 45vw;
+        display: none;
+
+        @include mobile {
+          display: block;
+        }
       }
 
       video {
