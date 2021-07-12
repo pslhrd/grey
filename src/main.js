@@ -47,7 +47,7 @@ loader.load(
     if (isSafari === true){
       homeLaunch()
       menuLaunch()
-      // sceneInit()
+      sceneInit()
     } else {
       sceneInit()
       menuLaunch()
@@ -219,9 +219,7 @@ function menuLaunch() {
       videos.forEach(video => {
         let videoData = video.getAttribute('data')
         if (menuData === videoData) {
-          if (isSafari === false) {
-            gsap.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:2, ease:'expo.out', stagger:0.1})
-          }        
+            gsap.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:2, ease:'expo.out', stagger:0.1})     
           gsap.set(video, {autoAlpha:0})
           video.querySelector('video').play()
           video.style.display = 'block'
@@ -282,6 +280,7 @@ function openPlayer(data) {
       if (videoStatus === 'playing'){
         currentPlayer.pause()
         videoStatus = 'paused'
+        currentTap.style.display = 'block'
       } else {
         currentPlayer.play()
         videoStatus = 'playing'
@@ -306,6 +305,7 @@ function openPlayer(data) {
         currentPlayer.pause()
         currentPlayer.currentTime = 0
         videoStatus = 'stopped'
+        currentTap.style.display = 'block'
       })    
     })
   })
