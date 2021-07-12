@@ -193,12 +193,12 @@ function homeLaunch(){
       video.addEventListener('mouseenter', event => {
         let player = video.querySelector('.video-player video')
         // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
-        gsap.to(grey.rotation, {x:1, duration:2, ease:'elastic.out'})
+        // gsap.to(grey.rotation, {x:1, duration:2, ease:'elastic.out'})
         player.play()
       })
       video.addEventListener('mouseleave', event => {
         let player = video.querySelector('.video-player video')
-        gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
+        // gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
         player.pause()
       })
     })
@@ -216,6 +216,7 @@ function openPlayer(data) {
     let currentBg = player.querySelector('.player-background')
     let currentClose = player.querySelector('.close')
     let currentCloseAnim = player.querySelector('.close span')
+    let currentTap = player.querySelector('.tap')
     let videoStatus
 
     if (playerData === data) {
@@ -241,6 +242,7 @@ function openPlayer(data) {
       } else {
         currentPlayer.play()
         videoStatus = 'playing'
+        currentTap.style.display = 'none'
       }
       
 
