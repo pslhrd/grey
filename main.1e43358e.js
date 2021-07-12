@@ -46972,35 +46972,63 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var loader = new _GLTFLoader.GLTFLoader();
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+var isMobile = {
+  Android: function Android() {
+    return navigator.userAgent.match(/Android/i);
+  },
+  BlackBerry: function BlackBerry() {
+    return navigator.userAgent.match(/BlackBerry/i);
+  },
+  iOS: function iOS() {
+    return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+  },
+  Opera: function Opera() {
+    return navigator.userAgent.match(/Opera Mini/i);
+  },
+  Windows: function Windows() {
+    return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+  },
+  any: function any() {
+    return isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows();
+  }
+};
 var scene, camera, controls, renderer, effect;
 var grey, light, amb;
 var body = document.querySelector('body');
+var preloader = document.querySelector('.preloader');
 scene = new THREE.Scene(); // GLTF
 
 loader.load(_grey.default, function (gltf) {
-  scene.add(gltf.scene.children[0]);
-  sceneInit();
+  scene.add(gltf.scene.children[0]); // sceneInit()
+
+  if (isSafari === true) {
+    homeLaunch();
+  } else {
+    sceneInit();
+    homeLaunch();
+  }
 });
 var start = Date.now();
-var imgLoad = new _imagesloaded.default(body, onceLoaded());
-imgLoad.on('progress', function (instance, image) {
-  var result = image.isLoaded ? 'loaded' : 'broken';
-  console.log('image is ' + result + ' for ' + image.img.src);
-});
+var imgLoad = new _imagesloaded.default(body);
+imgLoad.on('done', function (instance, image) {
+  var tl = _gsap.default.timeline();
 
-function onceLoaded() {
-  console.log('Loaded');
-}
+  tl.to(preloader, {
+    autoAlpha: 0,
+    duration: 1
+  }, 0.5);
+});
 
 function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(1); // document.body.appendChild(renderer.domElement)
+  renderer.setPixelRatio(0.1); // document.body.appendChild(renderer.domElement)
   // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
-  camera.position.z = 4;
+  camera.position.z = 3.5;
   camera.position.x = 0;
   camera.position.y = 0;
   scene.add(camera); // LIGHTS
@@ -47019,8 +47047,18 @@ function sceneInit() {
   document.body.appendChild(effect.domElement);
   effect.domElement.style.position = 'absolute';
   effect.domElement.style.top = '0px';
-  effect.domElement.style.left = '0px'; // CONTROLS
+  effect.domElement.style.left = '0px';
+  effect.domElement.style.zIndex = '1';
+
+  if (isMobile.any()) {
+    camera.position.z = 2;
+    effect.domElement.style.position = 'fixed';
+    effect.domElement.style.color = '#E0E0E0';
+  } else {
+    effect.domElement.style.position = 'absolute';
+  } // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
+
 
   controls = new _OrbitControls.OrbitControls(camera, effect.domElement);
   controls.enableZoom = true;
@@ -47039,6 +47077,33 @@ function sceneInit() {
   window.addEventListener('resize', onWindowResize, false);
   grey = scene.children[0]; // INTRO
 
+  var tl = _gsap.default.timeline();
+
+  tl.set('.video', {
+    autoAlpha: 0,
+    scale: 0.8
+  }).set('.logo, footer', {
+    autoAlpha: 0
+  }).from(camera.position, {
+    z: 100,
+    duration: 2,
+    ease: 'power4.out'
+  }, 2).to('.video', {
+    scale: 1,
+    autoAlpha: 1,
+    duration: 1.2,
+    ease: 'power4.out',
+    stagger: {
+      ease: 'power1.in',
+      each: 0.2
+    }
+  }, '-=1.2').to('.logo, footer', {
+    autoAlpha: 1,
+    duration: 1.2,
+    ease: 'power4.out',
+    stagger: 0.1
+  }, '-=1.6');
+
   function animate() {
     requestAnimationFrame(animate);
     render();
@@ -47054,20 +47119,35 @@ function sceneInit() {
   animate();
 }
 
-document.querySelectorAll('.video').forEach(function (video) {
-  video.addEventListener('click', function (event) {
-    var data = video.getAttribute('data');
-    openPlayer(data);
-  });
-  video.addEventListener('mouseenter', function (event) {
-    var player = video.querySelector('.video-player video');
-    player.play();
-  });
-  video.addEventListener('mouseleave', function (event) {
-    var player = video.querySelector('.video-player video');
-    player.pause();
-  });
-});
+function homeLaunch() {
+  if (isMobile.any()) {
+    document.querySelectorAll('.video').forEach(function (video) {
+      video.addEventListener('click', function (event) {
+        var data = video.getAttribute('data');
+        openPlayer(data);
+      });
+    });
+  } else {
+    document.querySelectorAll('.video').forEach(function (video) {
+      video.addEventListener('click', function (event) {
+        var data = video.getAttribute('data');
+        openPlayer(data);
+      });
+      video.addEventListener('mouseenter', function (event) {
+        var player = video.querySelector('.video-player video'); // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
+        // gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
+
+        player.play();
+      });
+      video.addEventListener('mouseleave', function (event) {
+        var player = video.querySelector('.video-player video'); // gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
+        // gsap.to(camera.position, {z:4, duration:1.2, ease:'power3.out'})
+
+        player.pause();
+      });
+    });
+  }
+}
 
 function openPlayer(data) {
   console.log(effect);
@@ -47139,7 +47219,7 @@ function openPlayer(data) {
         duration: 0.6,
         ease: 'power2.out'
       }).to(currentCloseAnim, {
-        y: '-101%',
+        y: '-103%',
         duration: 1,
         ease: 'power2.out'
       }, '-=0.6').to(currentPlayer, {
@@ -47188,7 +47268,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53161" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56287" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
