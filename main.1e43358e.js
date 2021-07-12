@@ -47154,13 +47154,23 @@ function homeLaunch() {
       });
       video.addEventListener('mouseenter', function (event) {
         var player = video.querySelector('.video-player video'); // gsap.to(camera.position, {z:6, duration: 0.3, ease:'power3.out'})
-        // gsap.to(grey.rotation, {x:3.14, duration:2, ease:'elastic.out'})
+
+        _gsap.default.to(grey.rotation, {
+          x: 1,
+          duration: 2,
+          ease: 'elastic.out'
+        });
 
         player.play();
       });
       video.addEventListener('mouseleave', function (event) {
-        var player = video.querySelector('.video-player video'); // gsap.to(grey.rotation, {x:0, duration:2, ease:'elastic.out'})
-        // gsap.to(camera.position, {z:4, duration:1.2, ease:'power3.out'})
+        var player = video.querySelector('.video-player video');
+
+        _gsap.default.to(grey.rotation, {
+          x: 0,
+          duration: 2,
+          ease: 'elastic.out'
+        });
 
         player.pause();
       });
@@ -47217,92 +47227,46 @@ function openPlayer(data) {
       }, '-=0.8');
     }
 
-    if (isMobile.any()) {
-      currentVideo.addEventListener('click', function (event) {
-        console.log(currentPlayer);
+    currentVideo.addEventListener('click', function (event) {
+      console.log(currentPlayer);
 
-        if (videoStatus === 'playing') {
-          currentPlayer.pause();
-          videoStatus = 'paused';
-        } else {
-          currentPlayer.play();
-          videoStatus = 'playing';
-        }
+      if (videoStatus === 'playing') {
+        currentPlayer.pause();
+        videoStatus = 'paused';
+      } else {
+        currentPlayer.play();
+        videoStatus = 'playing';
+      }
+    });
+    currentClose.addEventListener('click', function (event) {
+      var tl = _gsap.default.timeline();
+
+      tl.set(player, {
+        pointerEvents: 'none'
+      }).to(currentText, {
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }).to(currentCloseAnim, {
+        y: '-103%',
+        duration: 1,
+        ease: 'power2.out'
+      }, '-=0.6').to(currentPlayer, {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power4.out'
+      }, '-=0.8').to(currentBg, {
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power4.out'
+      }, '-=0.8').add(function () {
+        player.style.display = 'none';
+        player.style.pointerEvents = 'all';
+        currentPlayer.pause();
+        currentPlayer.currentTime = 0;
+        videoStatus = 'stopped';
       });
-      currentClose.addEventListener('click', function (event) {
-        var tl = _gsap.default.timeline();
-
-        tl.set(player, {
-          pointerEvents: 'none'
-        }).to(currentText, {
-          autoAlpha: 0,
-          duration: 0.6,
-          ease: 'power2.out'
-        }).to(currentCloseAnim, {
-          y: '-103%',
-          duration: 1,
-          ease: 'power2.out'
-        }, '-=0.6').to(currentPlayer, {
-          autoAlpha: 0,
-          duration: 1,
-          ease: 'power4.out'
-        }, '-=0.8').to(currentBg, {
-          autoAlpha: 0,
-          duration: 1,
-          ease: 'power4.out'
-        }, '-=0.8').add(function () {
-          player.style.display = 'none';
-          player.style.pointerEvents = 'all';
-          currentPlayer.pause();
-          currentPlayer.currentTime = 0;
-          videoStatus = 'stopped';
-        });
-      });
-    } else {
-      currentVideo.addEventListener('touchstart', function (event) {
-        event.preventDefault();
-        console.log(currentPlayer);
-
-        if (videoStatus === 'playing') {
-          currentPlayer.pause();
-          videoStatus = 'paused';
-        } else {
-          currentPlayer.play();
-          videoStatus = 'playing';
-        }
-      });
-      currentClose.addEventListener('touchstart', function (event) {
-        event.preventDefault();
-
-        var tl = _gsap.default.timeline();
-
-        tl.set(player, {
-          pointerEvents: 'none'
-        }).to(currentText, {
-          autoAlpha: 0,
-          duration: 0.6,
-          ease: 'power2.out'
-        }).to(currentCloseAnim, {
-          y: '-103%',
-          duration: 1,
-          ease: 'power2.out'
-        }, '-=0.6').to(currentPlayer, {
-          autoAlpha: 0,
-          duration: 1,
-          ease: 'power4.out'
-        }, '-=0.8').to(currentBg, {
-          autoAlpha: 0,
-          duration: 1,
-          ease: 'power4.out'
-        }, '-=0.8').add(function () {
-          player.style.display = 'none';
-          player.style.pointerEvents = 'all';
-          currentPlayer.pause();
-          currentPlayer.currentTime = 0;
-          videoStatus = 'stopped';
-        });
-      });
-    }
+    });
   });
 }
 },{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey.gltf":"src/assets/models/grey.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -47333,7 +47297,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57673" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52605" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

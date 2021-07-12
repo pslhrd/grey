@@ -319,6 +319,7 @@ body .player .close:hover {
 body .player-video {
   width: 40vw;
   height: 40vw;
+  position: relative;
   overflow: hidden;
 }
 @media (max-width: 900px) {
@@ -326,6 +327,15 @@ body .player-video {
     width: 90vw;
     height: 90vw;
   }
+}
+body .player-video .tap {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-family: Arial;
+  color: #E5E5E5;
+  font-size: 24px;
+  margin-top: 45vw;
 }
 body .player-video video {
   width: 100%;
