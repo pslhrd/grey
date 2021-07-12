@@ -9,8 +9,8 @@
   -webkit-backface-visibility: hidden;
 }
 
-$main: #787878;
-$bg: #EDEDED;
+$main: #ECECEC;
+$bg: #101010;
 
 body {
   padding: 0;
@@ -40,25 +40,27 @@ body {
     }
 
     .logo {
-      font-family: Arial;
-      color: $main;
-      font-size: 10px;
-      margin-top: 10px;
+      margin-top: 20px;
+      width: 10vw;
+
+      @include mobile {
+        width: 40vw;
+      }
 
       img {
         width: 100%;
-        height: 100%;
-        object-fit: cover;
+        height: auto;
       }
     }
   }
 
   footer {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-size: 52px;
-    font-family: Arial;
+    top: 15px;
+    right: 15px;
+    transform-origin: center;
+    font-size: 16px;
+    font-family: 'Monument';
     text-transform: uppercase;
     color: $main;
     z-index: 12;
@@ -68,6 +70,8 @@ body {
     }
 
     a {
+      padding: 5px;
+      margin-left: 20px;
       text-decoration: none;
       color: inherit;
     }
@@ -79,7 +83,7 @@ body {
     height: 100vh;
     top: 0;
     left: 0;
-    background-color: #E0E0E0;
+    background-color: #161616;
     z-index: 100;
   }
 
@@ -97,6 +101,7 @@ body {
       color: $main;
       font-size: 28vw;
       width: 100%;
+      overflow: hidden;
       text-align: center;
       display: none;
 
@@ -111,47 +116,74 @@ body {
     }
 
     @include mobile {
+      padding-bottom: 10vw;
       height: auto;
     }
   }
 
-  .vitaly1 {
-    top: 0;
-    left: 0;
-    margin-left: 20px;
-    margin-top: 7.5vw;
-    width: 20vw;
-    height: 30vw;
+  .menu {
+    position: absolute;
+    bottom: calc(20px - 0.33vw);
+    left: 20px;
+    z-index: 20;
+    font-family: 'Monument';
+    color: $main;
+    user-select: none;
 
     @include mobile {
+      display: none;
+    }
+
+    &:hover {
+      li {
+        opacity: 0.4
+      }
+    }
+
+    ul li {
+      position: relative;
+      display: inline-block;
+      font-size: 4.125vw;
+      line-height: 4.125vw;
+      list-style: none;
+      text-transform: uppercase;
+      transition: opacity 0.1s;
+
+      &:hover {
+        cursor: pointer;
+        opacity: 1 !important;
+      }
+
+      span {
+        font-family: 'Snell';
+        text-transform: none;
+        position: absolute;
+        display: block;
+        top: 0;
+        right: 0;
+        font-size: 1.5vw;
+        line-height: 1.5vw;
+        margin-top: 0.45vw;
+        transform: translateX(110%);
+      }
+    }
+  }
+
+  .vitaly1 {
+    @include mobile {
       margin-left: 5vw;
-      margin-top: 112px;
+      margin-top: 20vw;
     }
   }
 
   .vitaly2 {
-    bottom: 0;
-    left: 0;
-    margin-left: 12vw;
-    margin-bottom: 10vw;
-    width: 15vw;
-    height: 15vw;
-
     @include mobile {
       margin-left: 5vw;
       margin-top: 15vw;
-      margin-bottom: 0;
     }
   }
 
   .vitaly3 {
-    top: 0;
-    right: 0;
-    margin-right: 15.5vw;
-    margin-top: 20px;
-    width: 15vw;
-    height: 15vw;
-
     @include mobile {
       margin-left: 5vw;
       margin-top: 15vw;
@@ -161,13 +193,6 @@ body {
   }
 
   .vitaly4 {
-    top: 0;
-    right: 0;
-    margin-right: 20px;
-    margin-top: 13vw;
-    width: 20vw;
-    height: 30vw;
-
     @include mobile {
       margin-left: 5vw;
       margin-top: 15vw;
@@ -177,13 +202,6 @@ body {
   }
 
   .vitaly5 {
-    bottom: 0;
-    left: 0;
-    margin-left: 35vw;
-    margin-bottom: 37px;
-    width: 17vw;
-    height: 17vw;
-
     @include mobile {
       margin-left: 5vw;
       margin-top: 15vw;
@@ -193,13 +211,21 @@ body {
   }
 
   .video {
+    bottom: 20px;
+    right: 20px;
     position: absolute;
-    z-index: 5;
+    z-index: 26;
+    width: 21vw;
+    height: 21vw;
+    display: none;
 
     @include mobile {
+      bottom: 0;
+      right: 0;
       position: relative;
       width: 90vw;
       height: 90vw;
+      display: block;
     }
 
     &:hover {
@@ -231,7 +257,6 @@ body {
       z-index: 10;
 
       img {
-        filter: grayscale(100%);
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -257,13 +282,16 @@ body {
       justify-content: space-between;
       padding-top: 5px;
       font-size: 11px;
-      font-family: Arial;
+      font-family: 'Monument';
       text-transform: uppercase;
       color: $main;
       opacity: 0;
       transition: opacity 0.4s;
 
+      display: none;
+
       @include mobile {
+        display: flex;
         opacity: 1;
       }
 
@@ -287,7 +315,7 @@ body {
     top: 0;
     width: 100%;
     height: 100vh;
-    z-index: 12;
+    z-index: 25;
 
     &-wrapper {
       position: relative;
@@ -305,7 +333,7 @@ body {
       top: 0;
       width: 100%;
       height: 100vh;
-      background-color: #0F0F0F;
+      background-color: $bg;
       z-index: 11;
     }
 
@@ -323,8 +351,8 @@ body {
       right: 15px;
       padding: 5px;
       font-size: 52px;
-      font-family: Arial;
-      color: #E5E5E5;
+      font-family: 'Monument';
+      color: $main;
       text-transform: uppercase;
       overflow: hidden;
 
@@ -358,7 +386,7 @@ body {
         z-index: 18;
         width: 100%;
         text-align: center;
-        font-family: Arial;
+        font-family: 'Monument';
         color: #E5E5E5;
         font-size: 24px;
         margin-top: 45vw;
@@ -386,9 +414,9 @@ body {
       justify-content: space-between;
       padding-top: 10px;
       font-size: 12px;
-      font-family: Arial;
+      font-family: 'Monument';
       text-transform: uppercase;
-      color: #E5E5E5;
+      color: $main;
       overflow: hidden;
 
       span {

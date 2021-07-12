@@ -1,0 +1,9 @@
+@font-face {
+	font-family: 'Monument';
+	src: url('./MonumentGrotesk-Bold.woff') format('WOFF')
+}
+
+@font-face {
+	font-family: 'Snell';
+	src: url('./Snell-Roundhand-Regular.woff') format('WOFF')
+}
