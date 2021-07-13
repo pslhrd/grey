@@ -86,7 +86,7 @@ let imgLoad = new imagesLoaded(body)
 imgLoad.on( 'done', function( instance, image ) {
   let tl = gsap.timeline()
   tl
-  .to(preloader, {autoAlpha:0, duration:1}, 1)
+  .to(preloader, {autoAlpha:0, duration:1}, 2)
 
 })
 
