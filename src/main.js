@@ -292,10 +292,8 @@ function sceneInit() {
   function animate() {
 
     if (isPaused) {
-      console.log('Paused')
       requestAnimationFrame(animate)
     } else {
-      console.log('Running')
       requestAnimationFrame(animate)
       render()
     }
@@ -304,7 +302,6 @@ function sceneInit() {
   function render() {
     const timer = Date.now() - start
     effect.render(scene, camera)
-
     grey.rotation.y = timer * 0.0005
   }
 
