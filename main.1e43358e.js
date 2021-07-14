@@ -47046,7 +47046,10 @@ var imgLoad = new _imagesloaded.default(body);
 imgLoad.on('done', function (instance, image) {
   var tl = _gsap.default.timeline();
 
-  tl; // .to(preloader, {autoAlpha:0, duration:1}, 2)
+  tl.to(preloader, {
+    autoAlpha: 0,
+    duration: 1
+  }, 1);
 });
 
 function sceneInit() {
@@ -47074,7 +47077,6 @@ function sceneInit() {
   scene.add(light, light2); // VIDEOS
 
   videoTexture = new THREE.TextureLoader().load(_thumbnail.default);
-  console.log(_thumbnail.default);
   planeGeometry = new THREE.PlaneGeometry(1, 1);
   planeTexture = new THREE.MeshStandardMaterial({
     map: videoTexture
@@ -47082,9 +47084,9 @@ function sceneInit() {
   plane = new THREE.Mesh(planeGeometry, planeTexture);
   plane.position.set(-0.09, 0, 2.5);
   plane.scale.set(0, 0, 0);
-  scene.add(plane);
+  scene.add(plane); // HOVER
 
-  function selectVideos() {
+  function safariVideos() {
     document.querySelectorAll('.menu ul li').forEach(function (links) {
       var videos = document.querySelectorAll('.video');
       links.addEventListener('mouseenter', function (event) {
@@ -47094,12 +47096,14 @@ function sceneInit() {
 
           if (menuData === videoData) {
             var img = video.querySelector('img').src;
-            console.log(img);
             videoTexture = new THREE.TextureLoader().load(img);
-            plane.material.map = videoTexture;
-            console.log(videoTexture); // plane.material.map = videoTexture
+            plane.material.map = videoTexture; // plane.material.map = videoTexture
 
-            _gsap.default.to(plane.scale, {
+            _gsap.default.fromTo(plane.scale, {
+              y: 0.6,
+              x: 0.6,
+              z: 0.6
+            }, {
               y: 1,
               x: 1,
               z: 1,
@@ -47124,13 +47128,17 @@ function sceneInit() {
           var videoData = video.getAttribute('data');
 
           if (menuData === videoData) {
+            _gsap.default.killTweensOf(plane.scale);
+
             _gsap.default.to(plane.scale, {
               y: 0,
               x: 0,
               z: 0,
-              duration: 1,
+              duration: 1.2,
               ease: 'expo.out'
             });
+
+            console.log(plane.scale);
 
             _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
               x: 0
@@ -47155,7 +47163,96 @@ function sceneInit() {
     });
   }
 
-  selectVideos(); // EFFECTS
+  function chromeVideos() {
+    document.querySelectorAll('.menu ul li').forEach(function (links) {
+      var videos = document.querySelectorAll('.videos video');
+      links.addEventListener('mouseenter', function (event) {
+        var menuData = links.getAttribute('data');
+        videos.forEach(function (video) {
+          var videoData = video.getAttribute('data');
+
+          if (menuData === videoData) {
+            videoTexture = new THREE.VideoTexture(video);
+            plane.material.map = videoTexture;
+            video.muted = 'true';
+            videoTexture.needsUpdate;
+            videoTexture.crossOrigin = 'anonymous';
+            videoTexture.src = 'src to video';
+            video.setAttribute('muted', '');
+            video.play();
+
+            _gsap.default.fromTo(plane.scale, {
+              y: 0.6,
+              x: 0.6,
+              z: 0.6
+            }, {
+              y: 1,
+              x: 1,
+              z: 1,
+              duration: 1.2,
+              ease: 'expo.out'
+            });
+
+            _gsap.default.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {
+              y: 0,
+              x: 0,
+              z: 0,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            });
+          }
+        });
+      });
+      links.addEventListener('mouseleave', function (event) {
+        var menuData = links.getAttribute('data');
+        videos.forEach(function (video) {
+          var videoData = video.getAttribute('data');
+
+          if (menuData === videoData) {
+            video.pause();
+
+            _gsap.default.killTweensOf(plane.scale);
+
+            _gsap.default.to(plane.scale, {
+              y: 0,
+              x: 0,
+              z: 0,
+              duration: 1.2,
+              ease: 'expo.out'
+            });
+
+            console.log(plane.scale);
+
+            _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
+              x: 0
+            }, {
+              x: -Math.PI * 2,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            });
+
+            _gsap.default.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {
+              y: 1,
+              x: 1,
+              z: 1,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            });
+          }
+        });
+      });
+    });
+  }
+
+  if (isMobile.any() && isSafari === false) {
+    safariVideos();
+  } else {
+    chromeVideos();
+  } // EFFECTS
+
 
   effect = new _AsciiEffect.AsciiEffect(renderer, ' .-#&@/+', {
     invert: true
@@ -47197,7 +47294,7 @@ function sceneInit() {
 
   window.addEventListener('resize', onWindowResize, false);
   grey = scene.children[0];
-  grey.position.set(-0.09, 0, 1);
+  grey.position.set(-0.08, 0, 1);
   letter1 = grey.children[0];
   letter2 = grey.children[1];
   letter3 = grey.children[2];
@@ -47205,11 +47302,11 @@ function sceneInit() {
   // let tl = gsap.timeline()
   // tl
   // .set('.menu ul li', {autoAlpha:0})
-  // .set('.video', {autoAlpha:0, scale:0.8})
   // .set('.logo, footer', {autoAlpha:0})
-  // .from(camera.position, {z:100, duration:2, ease:'power4.out'}, 2)
-  // .to('.video', {scale:1, autoAlpha:1, duration:1.2, ease:'power4.out', stagger:{ease:'power1.in', each:0.2}}, '-=1.2')
-  // .to('.menu ul li', {autoAlpha:1, duration:1.2, ease:'power3.out', stagger:0.1}, '-=2')
+  // tl
+  // .fromTo([letter1.scale, letter2.scale, letter3.scale, letter4.scale],{y:0, x:0, z:0}, {y:1, x:1, z:1, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
+  // .fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
+  // .to('.menu ul li', {autoAlpha:1, duration:0.3, ease:'power3.out', stagger:0.1}, '-=1')
   // .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 
   function animate() {
@@ -47272,7 +47369,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53048" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58134" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -131,8 +131,8 @@ body .menu:hover li {
 body .menu ul li {
   position: relative;
   display: inline-block;
-  font-size: 6vw;
-  line-height: 5.3vw;
+  font-size: 5.3vw;
+  line-height: 5.1vw;
   list-style: none;
   text-transform: uppercase;
   transition: opacity 0.1s;
