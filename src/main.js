@@ -141,6 +141,8 @@ function sceneInit() {
       let videos = document.querySelectorAll('.video')
 
       links.addEventListener('mouseenter', event => {
+        oldText = links.querySelector('div').textContent
+        links.querySelector('div').textContent = '[PLAY THE VIDEO]'
         let menuData = links.getAttribute('data')
         videos.forEach(video => {
           let videoData = video.getAttribute('data')
@@ -157,6 +159,7 @@ function sceneInit() {
       })
 
       links.addEventListener('mouseleave', event => {
+        links.querySelector('div').textContent = oldText
         let menuData = links.getAttribute('data')
         videos.forEach(video => {
           let videoData = video.getAttribute('data')
