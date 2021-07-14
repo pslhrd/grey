@@ -47003,7 +47003,9 @@ var isMobile = {
 };
 var scene, camera, controls, renderer, effect;
 var grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4, light2, video, videoTexture, planeGeometry, planeTexture, plane;
+var start = Date.now();
 var body = document.querySelector('body');
+var imgLoad = new _imagesloaded.default(body);
 var preloader = document.querySelector('.preloader');
 scene = new THREE.Scene(); // GLTF
 
@@ -47012,11 +47014,12 @@ loader.load(_grey.default, function (gltf) {
 
   if (isSafari === true) {
     // menuLaunch()
-    sceneInit(); // homeLaunch()
+    sceneInit();
+    homeLaunch();
   } else {
     sceneInit(); // menuLaunch()
-    // homeLaunch()
-    // movingImages()
+
+    homeLaunch(); // movingImages()
   }
 });
 
@@ -47041,8 +47044,6 @@ function createParticleSystem(n) {
   return new THREE.Points(particles, pMaterial);
 }
 
-var start = Date.now();
-var imgLoad = new _imagesloaded.default(body);
 imgLoad.on('done', function (instance, image) {
   var tl = _gsap.default.timeline();
 
@@ -47056,8 +47057,7 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(1);
-  console.log(renderer); // document.body.appendChild(renderer.domElement)
+  renderer.setPixelRatio(1); // document.body.appendChild(renderer.domElement)
   // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
@@ -47082,13 +47082,16 @@ function sceneInit() {
     map: videoTexture
   });
   plane = new THREE.Mesh(planeGeometry, planeTexture);
-  plane.position.set(-0.09, 0, 2.5);
+  plane.position.set(-0.08, 0, 2.8);
   plane.scale.set(0, 0, 0);
   scene.add(plane); // HOVER
 
   function safariVideos() {
     document.querySelectorAll('.menu ul li').forEach(function (links) {
       var videos = document.querySelectorAll('.video');
+      videos.forEach(function (video) {
+        video.load();
+      });
       links.addEventListener('mouseenter', function (event) {
         var menuData = links.getAttribute('data');
         videos.forEach(function (video) {
@@ -47100,9 +47103,9 @@ function sceneInit() {
             plane.material.map = videoTexture; // plane.material.map = videoTexture
 
             _gsap.default.fromTo(plane.scale, {
-              y: 0.6,
-              x: 0.6,
-              z: 0.6
+              y: 0.8,
+              x: 0.8,
+              z: 0.8
             }, {
               y: 1,
               x: 1,
@@ -47138,8 +47141,6 @@ function sceneInit() {
               ease: 'expo.out'
             });
 
-            console.log(plane.scale);
-
             _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
               x: 0
             }, {
@@ -47166,6 +47167,9 @@ function sceneInit() {
   function chromeVideos() {
     document.querySelectorAll('.menu ul li').forEach(function (links) {
       var videos = document.querySelectorAll('.videos video');
+      videos.forEach(function (video) {
+        video.load();
+      });
       links.addEventListener('mouseenter', function (event) {
         var menuData = links.getAttribute('data');
         videos.forEach(function (video) {
@@ -47221,8 +47225,6 @@ function sceneInit() {
               duration: 1.2,
               ease: 'expo.out'
             });
-
-            console.log(plane.scale);
 
             _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
               x: 0
@@ -47341,6 +47343,105 @@ function homeLaunch() {
     });
   }
 }
+
+function openPlayer(data) {
+  document.querySelectorAll('.player').forEach(function (player) {
+    _gsap.default.killTweensOf(player);
+
+    var tl = _gsap.default.timeline();
+
+    var playerData = player.getAttribute('data');
+    var currentVideo = player.querySelector('.player-video');
+    var currentPlayer = player.querySelector('.player-video video');
+    var currentText = player.querySelectorAll('.player-content span');
+    var currentBg = player.querySelector('.player-background');
+    var currentClose = player.querySelector('.close');
+    var currentCloseAnim = player.querySelector('.close span');
+    var currentTap = player.querySelector('.tap');
+    var videoStatus;
+
+    if (playerData === data) {
+      tl = _gsap.default.timeline();
+      tl.set(currentBg, {
+        autoAlpha: 0
+      }).set(currentPlayer, {
+        autoAlpha: 0,
+        scale: 1
+      }).set(currentText, {
+        y: '100%',
+        autoAlpha: 1
+      }).set(currentCloseAnim, {
+        y: '101%',
+        autoAlpha: 1
+      }).add(function () {
+        player.style.display = 'block';
+        currentTap.style.display = 'block';
+      }).to(currentBg, {
+        autoAlpha: 1,
+        duration: 0.6,
+        ease: 'power2.out'
+      }).to(currentPlayer, {
+        autoAlpha: 1,
+        scale: 1,
+        duration: 1,
+        ease: 'power2.out'
+      }, '-=0.3').to(currentCloseAnim, {
+        y: '0%',
+        duration: 1,
+        ease: 'power4.out'
+      }, '-=0.9').to(currentText, {
+        y: '0%',
+        duration: 1,
+        ease: 'power4.out',
+        stagger: 0.2
+      }, '-=0.8').add(function () {
+        currentPlayer.style.visibility = 'visible';
+      });
+    }
+
+    currentVideo.addEventListener('click', function (event) {
+      if (videoStatus === 'playing') {
+        currentPlayer.pause();
+        videoStatus = 'paused';
+        currentTap.style.display = 'block';
+      } else {
+        currentPlayer.play();
+        videoStatus = 'playing';
+        currentTap.style.display = 'none';
+      }
+    });
+    currentClose.addEventListener('click', function (event) {
+      currentTap.style.display = 'none';
+      tl = _gsap.default.timeline();
+      tl.set(player, {
+        pointerEvents: 'none'
+      }).to(currentText, {
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }).to(currentCloseAnim, {
+        y: '-110%',
+        duration: 1,
+        ease: 'power2.out'
+      }, '-=0.6').to(currentPlayer, {
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, '-=0.8').to(currentBg, {
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, '-=0.8').add(function () {
+        player.style.display = 'none';
+        player.style.pointerEvents = 'all';
+        currentPlayer.pause();
+        currentPlayer.currentTime = 0;
+        videoStatus = 'stopped';
+        currentTap.style.display = 'block';
+      });
+    });
+  });
+}
 },{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js","/src/assets/images/thumbnail.jpg":"src/assets/images/thumbnail.jpg"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -47369,7 +47470,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58134" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64918" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
