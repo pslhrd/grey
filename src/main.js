@@ -49,15 +49,12 @@ loader.load(
 	function (gltf) {
     scene.add(gltf.scene.children[0])
     // sceneInit()
-    if (isSafari === true){
-      // menuLaunch()
-      sceneInit()
+    if (isMobile.any()){
+      mobileLaunch()
       homeLaunch()
     } else {
       sceneInit()
-      // menuLaunch()
       homeLaunch()
-      // movingImages()
     }
 	}
 )
@@ -292,6 +289,15 @@ function sceneInit() {
   }
 
   animate()
+}
+
+function mobileLaunch() {
+  let tl = gsap.timeline()
+
+  tl
+  .fromTo('.video', {y:'40%', autoAlpha:0}, {y:'0%', autoAlpha:1, ease:'power4.out', duration:1.4, stagger: 0.2}, 0.5)
+  .to('.menu ul li', {y:'0%', autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.09},  0.5)
+  .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 }
 
 function homeLaunch(){
