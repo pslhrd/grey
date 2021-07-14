@@ -7,23 +7,38 @@
   margin: 0;
   box-sizing: border-box;
   -webkit-backface-visibility: hidden;
+  user-select: none;
 }
 
 $main: #ECECEC;
 $bg: #101010;
 
+html {
+  @include mobile {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
 body {
   padding: 0;
   margin: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  background: $bg;
+  background: black;
   overflow: hidden;
 
   @include mobile {
     height: auto;
     overflow-y: visible;
     overflow-x: hidden;
+  }
+
+  main {
+    display: block;
+    width: 100vw;
+    height: auto;
+    overflow-x:hidden;
   }
 
   header {
@@ -41,7 +56,7 @@ body {
 
     .logo {
       margin-top: 20px;
-      width: 10vw;
+      width: 7vw;
 
       @include mobile {
         width: 40vw;
@@ -59,8 +74,8 @@ body {
     top: 15px;
     right: 15px;
     transform-origin: center;
-    font-size: 16px;
-    font-family: 'Monument';
+    font-size: 14px;
+    font-family: 'Monument', sans-serif, Helvetica;
     text-transform: uppercase;
     color: $main;
     z-index: 12;
@@ -71,7 +86,7 @@ body {
 
     a {
       padding: 5px;
-      margin-left: 20px;
+      margin-left: 15px;
       text-decoration: none;
       color: inherit;
     }
@@ -83,8 +98,9 @@ body {
     height: 100vh;
     top: 0;
     left: 0;
-    background-color: #161616;
-    z-index: 100;
+    background-color: black;
+    z-index: 600;
+    pointer-events: none;
   }
 
   .videos {
@@ -97,7 +113,7 @@ body {
 
     .shop-mobile {
       margin-top: 15vw;
-      font-family: Arial;
+      font-family: 'Monument';
       color: $main;
       font-size: 28vw;
       width: 100%;
@@ -122,11 +138,12 @@ body {
   }
 
   .menu {
+    // display: none;
     position: absolute;
-    bottom: calc(20px - 0.33vw);
+    bottom: calc(20px);
     left: 20px;
     z-index: 20;
-    font-family: 'Monument';
+    font-family: 'Monument' , sans-serif, Helvetica;
     color: $main;
     user-select: none;
 
@@ -136,18 +153,24 @@ body {
 
     &:hover {
       li {
-        opacity: 0.4
+        opacity: 0.4 !important
       }
+    }
+
+    .wrapper {
+      overflow: hidden;
+      min-height: 5.8vw
     }
 
     ul li {
       position: relative;
       display: inline-block;
-      font-size: 4.125vw;
-      line-height: 4.125vw;
+      font-size: 5.3vw;
+      line-height: 5.3vw;
       list-style: none;
       text-transform: uppercase;
       transition: opacity 0.1s;
+      opacity: 0;
 
       &:hover {
         cursor: pointer;
@@ -172,7 +195,7 @@ body {
   .vitaly1 {
     @include mobile {
       margin-left: 5vw;
-      margin-top: 60vh;
+      margin-top: 90vh;
     }
   }
 
@@ -226,17 +249,6 @@ body {
       width: 90vw;
       height: 90vw;
       display: block;
-    }
-
-    &:hover {
-      cursor: pointer;
-      .video-thumbnail {
-        opacity: 0;
-      }
-
-      .video-title {
-        opacity: 1;
-      }
     }
 
     &-content {
@@ -338,7 +350,7 @@ body {
       top: 0;
       width: 100%;
       height: 100vh;
-      background-color: $bg;
+      background-color: black;
       z-index: 11;
     }
 
@@ -379,6 +391,7 @@ body {
       width: 40vw;
       height: 40vw;
       position: relative;
+      z-index: 998;
       overflow: hidden;
 
       @include mobile {
@@ -396,6 +409,7 @@ body {
         font-size: 24px;
         margin-top: 45vw;
         display: none;
+        z-index: 999;
 
         @include mobile {
           display: block;

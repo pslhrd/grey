@@ -7,6 +7,7 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import gsap from 'gsap'
 import greyModel from '/src/assets/models/grey2.gltf'
 import imagesLoaded from 'imagesloaded'
+import thumbnail from '/src/assets/images/thumbnail.jpg'
 
 function lerp (start, end, amt) { return (1 - amt) * start + amt * end }
 const loader = new GLTFLoader()
@@ -33,10 +34,14 @@ const isMobile = {
 }
 
 let scene, camera, controls, renderer, effect
-let grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4
+let grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4, light2, video, videoTexture, planeGeometry, planeTexture, plane
+const start = Date.now()
 const body = document.querySelector('body')
+let imgLoad = new imagesLoaded(body)
 const preloader = document.querySelector('.preloader')
 scene = new THREE.Scene()
+gsap.set('.menu ul li', {autoAlpha:0, y:'100%'})
+gsap.set('.logo, footer', {autoAlpha:0})
 
 // GLTF
 loader.load(
@@ -45,12 +50,12 @@ loader.load(
     scene.add(gltf.scene.children[0])
     // sceneInit()
     if (isSafari === true){
-      homeLaunch()
-      menuLaunch()
+      // menuLaunch()
       sceneInit()
+      homeLaunch()
     } else {
       sceneInit()
-      menuLaunch()
+      // menuLaunch()
       homeLaunch()
       // movingImages()
     }
@@ -68,9 +73,9 @@ function createParticleSystem (n) {
   })
 
   for (let p = 0; p < n; p++) {
-    const pX = Math.random() * 20 - 10
-    const pY = Math.random() * 20 - 10
-    const pZ = Math.random() * 20 - 10
+    const pX = Math.random() * 10 - 5
+    const pY = Math.random() * 10 - 5
+    const pZ = Math.random() * 10 - 5
 
     vertices.push(pX, pY, pZ)
   }
@@ -80,14 +85,11 @@ function createParticleSystem (n) {
   return new THREE.Points(particles, pMaterial)
 }
 
-const start = Date.now()
-let imgLoad = new imagesLoaded(body)
-
 imgLoad.on( 'done', function( instance, image ) {
+  console.log('done')
   let tl = gsap.timeline()
   tl
-  .to(preloader, {autoAlpha:0, duration:1}, 2)
-
+  .to(preloader, {autoAlpha:0, duration:1}, 0.5)
 })
 
 function sceneInit() {
@@ -96,7 +98,7 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer()
   renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(0.1)
+  renderer.setPixelRatio(1)
   // document.body.appendChild(renderer.domElement)
 
 
@@ -113,32 +115,136 @@ function sceneInit() {
 
 
   // LIGHTS
-  light = new PointLight(0xffffff, 2, 0, 1)
+  light = new PointLight(0xffffff, 1.2, 0, 1)
+  light2 = new PointLight(0xffffff, 1.2, 0, 1)
   amb = new AmbientLight(0xffffff, 0.5)
-  light.position.set(5, 5, 0)
-  scene.add(amb, light)
+  light.position.set(0, -10, -10)
+  light2.position.set(0, 10, 10)
+  scene.add(light, light2)
 
+
+  // VIDEOS
+  videoTexture = new THREE.TextureLoader().load(thumbnail)
+  planeGeometry = new THREE.PlaneGeometry(1, 1)
+  planeTexture = new THREE.MeshStandardMaterial({map: videoTexture})
+  plane = new THREE.Mesh(planeGeometry, planeTexture)
+  plane.position.set(-0.08, 0, 2.8)
+  plane.scale.set(0,0,0)
+  scene.add(plane)
+
+
+
+  // HOVER
+  function safariVideos() {
+    document.querySelectorAll('.menu ul li').forEach(links => {
+      let videos = document.querySelectorAll('.video')
+
+      links.addEventListener('mouseenter', event => {
+        let menuData = links.getAttribute('data')
+        videos.forEach(video => {
+          let videoData = video.getAttribute('data')
+          if (menuData === videoData) {
+            let img = video.querySelector('img').src
+            videoTexture = new THREE.TextureLoader().load(img)
+            plane.material.map = videoTexture
+            // plane.material.map = videoTexture
+            gsap.fromTo(plane.scale,{y:0.8, x:0.8, z:0.8}, {y:1, x:1, z:1, duration:1.2, ease:'expo.out'})
+            gsap.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale],{y:0, x:0, z:0, duration:1.2, ease:'expo.out', stagger:0.1})  
+            
+          }
+        })
+      })
+
+      links.addEventListener('mouseleave', event => {
+        let menuData = links.getAttribute('data')
+        videos.forEach(video => {
+          let videoData = video.getAttribute('data')
+          if (menuData === videoData) {
+            gsap.killTweensOf(plane.scale)
+            gsap.to(plane.scale, {y:0, x:0, z:0, duration:1.2, ease:'expo.out'})
+            gsap.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:1.2, ease:'expo.out', stagger:0.1})
+            gsap.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {y:1, x:1, z:1, duration:1.2, ease:'expo.out', stagger:0.1})  
+          }
+        })
+      })
+    })
+  }
+
+  function chromeVideos() {
+    document.querySelectorAll('.menu ul li').forEach(links => {
+      let videos = document.querySelectorAll('.videos video')
+
+      links.addEventListener('mouseenter', event => {
+        let menuData = links.getAttribute('data')
+        videos.forEach(video => {
+          let videoData = video.getAttribute('data')
+          if (menuData === videoData) {
+            videoTexture = new THREE.VideoTexture(video)
+            plane.material.map = videoTexture
+            video.muted = 'true'
+            videoTexture.needsUpdate
+            videoTexture.crossOrigin = 'anonymous'
+            videoTexture.src = 'src to video'
+            video.setAttribute('muted', '')
+            video.play()
+            gsap.fromTo(plane.scale,{y:0.6, x:0.6, z:0.6}, {y:1, x:1, z:1, duration:1.2, ease:'expo.out'})
+            gsap.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale],{y:0, x:0, z:0, duration:1.2, ease:'expo.out', stagger:0.1})  
+            
+          }
+        })
+      })
+
+      links.addEventListener('mouseleave', event => {
+        let menuData = links.getAttribute('data')
+        videos.forEach(video => {
+          let videoData = video.getAttribute('data')
+          if (menuData === videoData) {
+            video.pause()
+            gsap.killTweensOf(plane.scale)
+            gsap.to(plane.scale, {y:0, x:0, z:0, duration:1.2, ease:'expo.out'})
+            gsap.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:1.2, ease:'expo.out', stagger:0.1})
+            gsap.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {y:1, x:1, z:1, duration:1.2, ease:'expo.out', stagger:0.1})  
+          }
+        })
+      })
+    })
+  }
+
+  if (isMobile.any() && isSafari === false) {
+    console.log('chrome')
+    chromeVideos()
+  } else {
+    console.log('safari')
+    safariVideos()
+  }
 
 
   // EFFECTS
-  effect = new AsciiEffect(renderer,' .-#',{invert: true})
+
+  effect = new AsciiEffect(renderer,' .-#&@/+',{invert: true})
   effect.setSize(window.innerWidth, window.innerHeight)
   effect.domElement.style.color = '#454545'
   effect.domElement.style.backgroundColor = 'none'
   document.body.appendChild(effect.domElement)
+
   effect.domElement.style.position = 'absolute'
   effect.domElement.style.top = '0px'
+
+  let table = effect.domElement.querySelector('table')
+  table.style.display = 'table'
+  gsap.set(effect.domElement, {scale:1.05})
   effect.domElement.style.left = '0px'
   effect.domElement.style.zIndex = '1'
 
 
   if (isMobile.any()) {
     camera.position.z = 8
+    camera.position.y = -0.3
   }
 
   // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
-  // controls = new OrbitControls(camera, effect.domElement)
+  // controls = new OrbitControls(camera, renderer.domElement)
   // controls.enableZoom = true
   // controls.enablePan = true
   // controls.enableDamping = true
@@ -155,6 +261,7 @@ function sceneInit() {
   window.addEventListener('resize', onWindowResize, false)
 
   grey = scene.children[0]
+  grey.position.set(-0.08, 0, 1)
   letter1 = grey.children[0]
   letter2 = grey.children[1]
   letter3 = grey.children[2]
@@ -163,14 +270,12 @@ function sceneInit() {
 
   // INTRO
   let tl = gsap.timeline()
-  tl
-  .set('.menu ul li', {autoAlpha:0})
-  .set('.video', {autoAlpha:0, scale:0.8})
-  .set('.logo, footer', {autoAlpha:0})
 
-  .from(camera.position, {z:100, duration:2, ease:'power4.out'}, 2)
-  .to('.video', {scale:1, autoAlpha:1, duration:1.2, ease:'power4.out', stagger:{ease:'power1.in', each:0.2}}, '-=1.2')
-  .to('.menu ul li', {autoAlpha:1, duration:1.2, ease:'power3.out', stagger:0.1}, '-=2')
+  tl
+  .from(camera.position, {z:50, duration:2, ease:'expo.out'}, 0.5)
+  .fromTo([letter1.scale, letter2.scale, letter3.scale, letter4.scale],{y:0, x:0, z:0}, {y:1, x:1, z:1, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
+  .fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
+  .to('.menu ul li', {y:'0%', autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.09}, '-=1.2')
   .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 
 
@@ -193,7 +298,6 @@ function homeLaunch(){
   if (isMobile.any()) {
     document.querySelectorAll('.video').forEach(video => {
       video.addEventListener('click', event => {
-        event.preventDefault()
         let data = video.getAttribute('data')
         openPlayer(data)
       })
@@ -208,42 +312,10 @@ function homeLaunch(){
   }
 }
 
-function menuLaunch() {
-  document.querySelectorAll('.menu ul li').forEach(links => {
-    let videos = document.querySelectorAll('.video')
-
-    links.addEventListener('mouseenter', event => {
-      let menuData = links.getAttribute('data')
-      videos.forEach(video => {
-        let videoData = video.getAttribute('data')
-        if (menuData === videoData) {
-            gsap.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:2, ease:'expo.out', stagger:0.1})     
-          gsap.set(video, {autoAlpha:0})
-          video.querySelector('video').play()
-          video.style.display = 'block'
-          gsap.to(video, {autoAlpha:1, duration:0.6})
-        }
-      })
-    })
-
-    links.addEventListener('mouseleave', event => {
-      let menuData = links.getAttribute('data')
-      videos.forEach(video => {
-        let videoData = video.getAttribute('data')
-        if (menuData === videoData) {
-          video.querySelector('video').pause()
-          gsap.set(video, {autoAlpha:0})
-          video.style.display = 'none'
-        }
-      })
-    })
-  })
-
-}
-
 function openPlayer(data) {
-  console.log(effect)
   document.querySelectorAll('.player').forEach(player => {
+
+    gsap.killTweensOf(player)
 
     let tl = gsap.timeline()
 
@@ -258,7 +330,6 @@ function openPlayer(data) {
     let videoStatus
 
     if (playerData === data) {
-      tl.kill()
       tl = gsap.timeline()
       tl
       .set(currentBg, {autoAlpha:0})
@@ -266,15 +337,15 @@ function openPlayer(data) {
       .set(currentText, {y:'100%', autoAlpha:1})
       .set(currentCloseAnim, {y:'101%', autoAlpha:1})
       .add(function(){player.style.display = 'block'; currentTap.style.display = 'block'})
-      .to(currentBg, {autoAlpha:1, duration:0.8, ease:'power2.out'})
-      .to(currentPlayer, {autoAlpha:1, scale:1, duration:1.2, ease:'power4.out'}, '-=0.7')
-      .to(currentCloseAnim, {y:'0%', duration:1.2, ease:'power4.out'}, '-=0.9')      
+      .to(currentBg, {autoAlpha:1, duration:0.6, ease:'power2.out'})
+      .to(currentPlayer, {autoAlpha:1, scale:1, duration:1, ease:'power2.out'}, '-=0.3')
+      .to(currentCloseAnim, {y:'0%', duration:1, ease:'power4.out'}, '-=0.9')      
       .to(currentText, {y:'0%', duration:1, ease:'power4.out', stagger:0.2}, '-=0.8')
+      .add(function(){currentPlayer.style.visibility = 'visible'})
           
     }
 
     currentVideo.addEventListener('click', event => {
-      console.log(currentPlayer)
       if (videoStatus === 'playing'){
         currentPlayer.pause()
         videoStatus = 'paused'
@@ -288,15 +359,14 @@ function openPlayer(data) {
 
     })
     currentClose.addEventListener('click', event => {
-      tl.kill()
       currentTap.style.display = 'none'
       tl = gsap.timeline()
       tl
       .set(player, {pointerEvents: 'none'})
       .to(currentText, {autoAlpha:0, duration:0.6, ease:'power2.out'})
       .to(currentCloseAnim, {y:'-110%', duration:1, ease:'power2.out'}, '-=0.6')
-      .to(currentPlayer, {autoAlpha:0, duration:1, ease:'power2.out'}, '-=0.8')
-      .to(currentBg, {autoAlpha:0, duration:1, ease:'power2.out'}, '-=0.8')
+      .to(currentPlayer, {autoAlpha:0, duration:0.6, ease:'power2.out'}, '-=0.8')
+      .to(currentBg, {autoAlpha:0, duration:0.6, ease:'power2.out'}, '-=0.8')
       .add(function(){
         player.style.display = 'none'
         player.style.pointerEvents = 'all'
@@ -306,19 +376,5 @@ function openPlayer(data) {
         currentTap.style.display = 'block'
       })    
     })
-  })
-}
-
-function movingImages() {
-  document.querySelectorAll('.video').forEach((video) => {
-    let speed = video.getAttribute('speed')
-    document.addEventListener('mousemove', event => {
-      let 
-      xPos = (event.clientX / window.innerWidth) - 0.5,
-      yPos = (event.clientY / window.innerHeight) - 0.5
-
-      gsap.to(video, {y: -yPos * speed, x: -xPos * speed, ease:'power1.out', duration:0.8})
-    })
-
   })
 }

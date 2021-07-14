@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>GREY93</title>
   <link rel="stylesheet" href="./src/assets/fonts/fonts.css">
@@ -18,229 +18,231 @@
 </head>
 <body>
 
-  <header>
-    <div class="wrapper">
-      <div class="logo">
-        <img src="./src/assets/images/logo.png">
-      </div>
-    </div>
-  </header>
-
-  <section class="preloader">
-  </section>
-
-  <section class="menu">
-    <ul>
-      <div class="wrapper"><li data="vitaly4">Experiments<span>Grey.Co</span></li></div>
-      <div class="wrapper"><li data="vitaly1">Vitaly I<span>July 26th</span></li></div>
-      <div class="wrapper"><li data="vitaly2">Vitaly II<span>July 26th</span></li></div>
-      <div class="wrapper"><li data="vitaly3">Vitaly III<span>July 26th</span></li></div>
-      <div class="wrapper"><li data="vitaly5">MoodBored<span>Grey.Co</span></li></div>
-    </ul>
-  </section>
-
-  <section class="videos">
-
-    <div class="video vitaly1" data="vitaly1" speed="100">
-      <div class="video-content">
-        <div class="video-thumbnail">
-          <img src="./src/assets/images/thumbnail04.jpg">
-        </div>
-        <div class="video-player">
-          <video muted loop playsinline>
-            <source src="./src/assets/videos/vitaly1.mp4" type="video/mp4">
-          </video>
+  <main>
+    <header>
+      <div class="wrapper">
+        <div class="logo">
+          <img src="./src/assets/images/logo.png">
         </div>
       </div>
-      <div class="video-title">
-        <span>[ G93 Co/Vitaly I ]</span>
-        <span>[ 0:31 ]</span>
-      </div>
-    </div>
+    </header>
 
-    <div class="video vitaly2" data="vitaly2" speed="75">
-      <div class="video-content">
-        <div class="video-thumbnail">
-          <img src="./src/assets/images/thumbnail03.jpg">
-        </div>
-        <div class="video-player">
-          <video muted loop playsinline>
-            <source src="./src/assets/videos/vitaly2.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <div class="video-title">
-        <span>[ G93 Co/Vitaly II ]</span>
-        <span>[ 0:31 ]</span>
-      </div>
-    </div>
+    <section class="preloader">
+    </section>
 
-    <div class="video vitaly3" data="vitaly3" speed="100">
-      <div class="video-content">
-        <div class="video-thumbnail">
-          <img src="./src/assets/images/thumbnail02.jpg">
-        </div>
-        <div class="video-player">
-          <video muted loop playsinline>
-            <source src="./src/assets/videos/vitaly3.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <div class="video-title">
-        <span>[ G93 Co/Vitaly III ]</span>
-        <span>[ 0:35 ]</span>
-      </div>
-    </div>
+    <section class="menu">
+      <ul>
+        <div class="wrapper"><li data="vitaly4">[Experiments]</li></div>
+        <div class="wrapper"><li data="vitaly1">[Vitaly I]<span>July 26th</span></li></div>
+        <div class="wrapper"><li data="vitaly2">[Vitaly II]<span>July 26th</span></li></div>
+        <div class="wrapper"><li data="vitaly3">[Vitaly III]<span>July 26th</span></li></div>
+        <div class="wrapper"><li data="vitaly5">[MoodBored]</li></div>
+      </ul>
+    </section>
 
-    <div class="video vitaly4" data="vitaly4" speed="100">
-      <div class="video-content">
-        <div class="video-thumbnail">
-          <img src="./src/assets/images/thumbnail01.jpg">
-        </div>
-        <div class="video-player">
-          <video muted loop playsinline>
-            <source src="./src/assets/videos/exp.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <div class="video-title">
-        <span>[ Grey Experiments ]</span>
-        <span>[ 0:35 ]</span>
-      </div>
-    </div>
+    <section class="videos">
 
-    <div class="video vitaly5" data="vitaly5" speed="220">
-      <div class="video-content">
-        <div class="video-player">
-        <div class="video-thumbnail">
-          <img src="./src/assets/images/thumbnail05.jpg">
-        </div>
-          <video muted loop playsinline>
-            <source src="./src/assets/videos/moodbored.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <div class="video-title">
-        <span>[ Moodbored ]</span>
-        <span>[ 0:29 ]</span>
-      </div>
-    </div>
-
-    <div class="shop-mobile"><a href="https://www.grey93.com/home/grey93merchandise" target="_blank">[SHOP]</a></div>
-  </section>
-
-  <section class="players">
-
-    <div class="player" data="vitaly1">
-      <div class="player-wrapper">
-        <div class="close">
-          <span>[Close]</span>
-        </div>
-        <div class="wrapper">
-          <div class="player-video">
-            <div class="tap">[ PLAY ]</div>
-            <video loop playsinline>
+      <div class="video vitaly1" data="vitaly1" speed="100">
+        <div class="video-content">
+          <div class="video-thumbnail">
+            <img src="./src/assets/images/thumbnail04.jpg">
+          </div>
+          <div class="video-player">
+            <video muted loop playsinline id="video" data="vitaly1">
               <source src="./src/assets/videos/vitaly1.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="player-content">
-            <span>[ G93 Co/Vitaly I ] [ Dropping on July 26th ]</span>
-            <span>[ 0:31 ]</span>
-          </div>
+        </div>
+        <div class="video-title">
+          <span>[ G93 Co/Vitaly I ]</span>
+          <span>[ 0:31 ]</span>
         </div>
       </div>
-      <div class="player-background"></div>
-    </div>
 
-    <div class="player" data="vitaly2">
-      <div class="player-wrapper">
-        <div class="close">
-          <span>[Close]</span>
-        </div>
-        <div class="wrapper">
-          <div class="player-video">
-            <div class="tap">[ PLAY ]</div>
-            <video loop playsinline>
+      <div class="video vitaly2" data="vitaly2" speed="75">
+        <div class="video-content">
+          <div class="video-thumbnail">
+            <img src="./src/assets/images/thumbnail03.jpg">
+          </div>
+          <div class="video-player">
+            <video muted loop playsinline data="vitaly2">
               <source src="./src/assets/videos/vitaly2.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="player-content">
-            <span>[ G93 Co/Vitaly II ] [ Dropping on July 26th ]</span>
-            <span>[ 0:31 ]</span>
-          </div>
+        </div>
+        <div class="video-title">
+          <span>[ G93 Co/Vitaly II ]</span>
+          <span>[ 0:31 ]</span>
         </div>
       </div>
-      <div class="player-background"></div>
-    </div>
 
-    <div class="player" data="vitaly3">
-      <div class="player-wrapper">
-        <div class="close">
-          <span>[Close]</span>
-        </div>
-        <div class="wrapper">
-          <div class="player-video">
-            <div class="tap">[ PLAY ]</div>
-            <video loop playsinline>
+      <div class="video vitaly3" data="vitaly3" speed="100">
+        <div class="video-content">
+          <div class="video-thumbnail">
+            <img src="./src/assets/images/thumbnail02.jpg">
+          </div>
+          <div class="video-player">
+            <video muted loop playsinline data="vitaly3">
               <source src="./src/assets/videos/vitaly3.mp4" type="video/mp4">
-            </video>         
+            </video>
           </div>
-          <div class="player-content">
-            <span>[ G93 Co/Vitaly III ] [ Dropping on July 26th ]</span>
-            <span>[ 0:35 ]</span>
-          </div>
+        </div>
+        <div class="video-title">
+          <span>[ G93 Co/Vitaly III ]</span>
+          <span>[ 0:35 ]</span>
         </div>
       </div>
-      <div class="player-background"></div>
-    </div>
 
-    <div class="player" data="vitaly4">
-      <div class="player-wrapper">
-        <div class="close">
-          <span>[Close]</span>
-        </div>
-        <div class="wrapper">
-          <div class="player-video">
-            <div class="tap">[ PLAY ]</div>
-            <video loop playsinline>
+      <div class="video vitaly4" data="vitaly4" speed="100">
+        <div class="video-content">
+          <div class="video-thumbnail">
+            <img src="./src/assets/images/thumbnail01.jpg">
+          </div>
+          <div class="video-player">
+            <video muted loop playsinline data="vitaly4">
               <source src="./src/assets/videos/exp.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="player-content">
-            <span>[ Grey Experiments ]</span>
-            <span>[ 0:35] </span>
-          </div>
+        </div>
+        <div class="video-title">
+          <span>[ Grey Experiments ]</span>
+          <span>[ 0:35 ]</span>
         </div>
       </div>
-      <div class="player-background"></div>
-    </div>
 
-    <div class="player" data="vitaly5">
-      <div class="player-wrapper">
-        <div class="close">
-          <span>[Close]</span>
-        </div>
-        <div class="wrapper">
-          <div class="player-video">
-            <div class="tap">[ PLAY ]</div>
-            <video loop playsinline>
+      <div class="video vitaly5" data="vitaly5" speed="220">
+        <div class="video-content">
+          <div class="video-player">
+          <div class="video-thumbnail">
+            <img src="./src/assets/images/thumbnail05.jpg">
+          </div>
+            <video muted loop playsinline data="vitaly5">
               <source src="./src/assets/videos/moodbored.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="player-content">
-            <span>[ Moodbored ]</span>
-            <span>[ 0:29] </span>
-          </div>
+        </div>
+        <div class="video-title">
+          <span>[ Moodbored ]</span>
+          <span>[ 0:29 ]</span>
         </div>
       </div>
-      <div class="player-background"></div>
-    </div>
-  </section>
 
-  <footer>
-    <a href="https://www.grey93.com/home/grey93merchandise" target="_blank">SHOP</a>
-    <a href="https://www.instagram.com/grey93/" target="_blank">INSTAGRAM</a>
-  </footer>
+      <div class="shop-mobile"><a href="https://www.grey93.com/home/grey93merchandise" target="_blank">[SHOP]</a></div>
+    </section>
+
+    <section class="players">
+
+      <div class="player" data="vitaly1">
+        <div class="player-wrapper">
+          <div class="close">
+            <span>[Close]</span>
+          </div>
+          <div class="wrapper">
+            <div class="player-video">
+              <div class="tap">[ PLAY ]</div>
+              <video loop playsinline>
+                <source src="./src/assets/videos/vitaly1.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="player-content">
+              <span>[ G93 Co/Vitaly I ] [ Dropping on July 26th ]</span>
+              <span>[ 0:31 ]</span>
+            </div>
+          </div>
+        </div>
+        <div class="player-background"></div>
+      </div>
+
+      <div class="player" data="vitaly2">
+        <div class="player-wrapper">
+          <div class="close">
+            <span>[Close]</span>
+          </div>
+          <div class="wrapper">
+            <div class="player-video">
+              <div class="tap">[ PLAY ]</div>
+              <video loop playsinline>
+                <source src="./src/assets/videos/vitaly2.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="player-content">
+              <span>[ G93 Co/Vitaly II ] [ Dropping on July 26th ]</span>
+              <span>[ 0:31 ]</span>
+            </div>
+          </div>
+        </div>
+        <div class="player-background"></div>
+      </div>
+
+      <div class="player" data="vitaly3">
+        <div class="player-wrapper">
+          <div class="close">
+            <span>[Close]</span>
+          </div>
+          <div class="wrapper">
+            <div class="player-video">
+              <div class="tap">[ PLAY ]</div>
+              <video loop playsinline>
+                <source src="./src/assets/videos/vitaly3.mp4" type="video/mp4">
+              </video>         
+            </div>
+            <div class="player-content">
+              <span>[ G93 Co/Vitaly III ] [ Dropping on July 26th ]</span>
+              <span>[ 0:35 ]</span>
+            </div>
+          </div>
+        </div>
+        <div class="player-background"></div>
+      </div>
+
+      <div class="player" data="vitaly4">
+        <div class="player-wrapper">
+          <div class="close">
+            <span>[Close]</span>
+          </div>
+          <div class="wrapper">
+            <div class="player-video">
+              <div class="tap">[ PLAY ]</div>
+              <video loop playsinline>
+                <source src="./src/assets/videos/exp.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="player-content">
+              <span>[ Grey Experiments ]</span>
+              <span>[ 0:35] </span>
+            </div>
+          </div>
+        </div>
+        <div class="player-background"></div>
+      </div>
+
+      <div class="player" data="vitaly5">
+        <div class="player-wrapper">
+          <div class="close">
+            <span>[Close]</span>
+          </div>
+          <div class="wrapper">
+            <div class="player-video">
+              <div class="tap">[ PLAY ]</div>
+              <video loop playsinline>
+                <source src="./src/assets/videos/moodbored.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="player-content">
+              <span>[ Moodbored ]</span>
+              <span>[ 0:29] </span>
+            </div>
+          </div>
+        </div>
+        <div class="player-background"></div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="https://www.grey93.com/home/grey93merchandise" target="_blank">[SHOP]</a>
+      <a href="https://www.instagram.com/grey93/" target="_blank">[INSTAGRAM]</a>
+    </footer>
+  </main>
 
   <script src="./src/main.js"></script>
 </body>
