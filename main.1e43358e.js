@@ -47011,13 +47011,12 @@ loader.load(_grey.default, function (gltf) {
   scene.add(gltf.scene.children[0]); // sceneInit()
 
   if (isSafari === true) {
-    homeLaunch(); // menuLaunch()
-
-    sceneInit();
+    // menuLaunch()
+    sceneInit(); // homeLaunch()
   } else {
     sceneInit(); // menuLaunch()
-
-    homeLaunch(); // movingImages()
+    // homeLaunch()
+    // movingImages()
   }
 });
 
@@ -47256,174 +47255,6 @@ function homeLaunch() {
     });
   }
 }
-
-function menuLaunch() {
-  document.querySelectorAll('.menu ul li').forEach(function (links) {
-    var videos = document.querySelectorAll('.video');
-    links.addEventListener('mouseenter', function (event) {
-      var menuData = links.getAttribute('data');
-      videos.forEach(function (video) {
-        var videoData = video.getAttribute('data');
-
-        if (menuData === videoData) {
-          _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
-            x: 0
-          }, {
-            x: -Math.PI * 2,
-            duration: 2,
-            ease: 'expo.out',
-            stagger: 0.1
-          });
-
-          _gsap.default.set(video, {
-            autoAlpha: 0
-          });
-
-          video.querySelector('video').play();
-          video.style.display = 'block';
-
-          _gsap.default.to(video, {
-            autoAlpha: 1,
-            duration: 0.6
-          });
-        }
-      });
-    });
-    links.addEventListener('mouseleave', function (event) {
-      var menuData = links.getAttribute('data');
-      videos.forEach(function (video) {
-        var videoData = video.getAttribute('data');
-
-        if (menuData === videoData) {
-          video.querySelector('video').pause();
-
-          _gsap.default.set(video, {
-            autoAlpha: 0
-          });
-
-          video.style.display = 'none';
-        }
-      });
-    });
-  });
-}
-
-function openPlayer(data) {
-  console.log(effect);
-  document.querySelectorAll('.player').forEach(function (player) {
-    var tl = _gsap.default.timeline();
-
-    var playerData = player.getAttribute('data');
-    var currentVideo = player.querySelector('.player-video');
-    var currentPlayer = player.querySelector('.player-video video');
-    var currentText = player.querySelectorAll('.player-content span');
-    var currentBg = player.querySelector('.player-background');
-    var currentClose = player.querySelector('.close');
-    var currentCloseAnim = player.querySelector('.close span');
-    var currentTap = player.querySelector('.tap');
-    var videoStatus;
-
-    if (playerData === data) {
-      tl.kill();
-      tl = _gsap.default.timeline();
-      tl.set(currentBg, {
-        autoAlpha: 0
-      }).set(currentPlayer, {
-        autoAlpha: 0,
-        scale: 1
-      }).set(currentText, {
-        y: '100%',
-        autoAlpha: 1
-      }).set(currentCloseAnim, {
-        y: '101%',
-        autoAlpha: 1
-      }).add(function () {
-        player.style.display = 'block';
-        currentTap.style.display = 'block';
-      }).to(currentBg, {
-        autoAlpha: 1,
-        duration: 0.8,
-        ease: 'power2.out'
-      }).to(currentPlayer, {
-        autoAlpha: 1,
-        scale: 1,
-        duration: 1.2,
-        ease: 'power4.out'
-      }, '-=0.7').to(currentCloseAnim, {
-        y: '0%',
-        duration: 1.2,
-        ease: 'power4.out'
-      }, '-=0.9').to(currentText, {
-        y: '0%',
-        duration: 1,
-        ease: 'power4.out',
-        stagger: 0.2
-      }, '-=0.8');
-    }
-
-    currentVideo.addEventListener('click', function (event) {
-      console.log(currentPlayer);
-
-      if (videoStatus === 'playing') {
-        currentPlayer.pause();
-        videoStatus = 'paused';
-        currentTap.style.display = 'block';
-      } else {
-        currentPlayer.play();
-        videoStatus = 'playing';
-        currentTap.style.display = 'none';
-      }
-    });
-    currentClose.addEventListener('click', function (event) {
-      tl.kill();
-      currentTap.style.display = 'none';
-      tl = _gsap.default.timeline();
-      tl.set(player, {
-        pointerEvents: 'none'
-      }).to(currentText, {
-        autoAlpha: 0,
-        duration: 0.6,
-        ease: 'power2.out'
-      }).to(currentCloseAnim, {
-        y: '-110%',
-        duration: 1,
-        ease: 'power2.out'
-      }, '-=0.6').to(currentPlayer, {
-        autoAlpha: 0,
-        duration: 1,
-        ease: 'power2.out'
-      }, '-=0.8').to(currentBg, {
-        autoAlpha: 0,
-        duration: 1,
-        ease: 'power2.out'
-      }, '-=0.8').add(function () {
-        player.style.display = 'none';
-        player.style.pointerEvents = 'all';
-        currentPlayer.pause();
-        currentPlayer.currentTime = 0;
-        videoStatus = 'stopped';
-        currentTap.style.display = 'block';
-      });
-    });
-  });
-}
-
-function movingImages() {
-  document.querySelectorAll('.video').forEach(function (video) {
-    var speed = video.getAttribute('speed');
-    document.addEventListener('mousemove', function (event) {
-      var xPos = event.clientX / window.innerWidth - 0.5,
-          yPos = event.clientY / window.innerHeight - 0.5;
-
-      _gsap.default.to(video, {
-        y: -yPos * speed,
-        x: -xPos * speed,
-        ease: 'power1.out',
-        duration: 0.8
-      });
-    });
-  });
-}
 },{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js","/src/assets/videos/vitaly1.mp4":"src/assets/videos/vitaly1.mp4"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -47452,7 +47283,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49625" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52255" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
