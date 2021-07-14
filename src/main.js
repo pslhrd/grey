@@ -37,7 +37,9 @@ const isMobile = {
 }
 
 let scene, camera, controls, renderer, effect
-let grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4, light2, video, videoTexture, planeGeometry, planeTexture, plane
+let grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4, light2
+let video, videoTexture, planeGeometry, planeTexture, plane
+let isPaused = false
 const start = Date.now()
 const body = document.querySelector('body')
 let imgLoad = new imagesLoaded(body)
@@ -58,6 +60,7 @@ loader.load(
       homeLaunch()
     } else {
       sceneInit()
+      // mobileLaunch()
       homeLaunch()
     }
 	}
@@ -99,7 +102,7 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer()
   renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(1)
+  renderer.setPixelRatio(0.5)
   // document.body.appendChild(renderer.domElement)
 
 
@@ -287,8 +290,15 @@ function sceneInit() {
 
 
   function animate() {
-    requestAnimationFrame(animate)
-    render()
+
+    if (isPaused) {
+      console.log('Paused')
+      requestAnimationFrame(animate)
+    } else {
+      console.log('Running')
+      requestAnimationFrame(animate)
+      render()
+    }
   }
 
   function render() {
@@ -297,6 +307,7 @@ function sceneInit() {
 
     grey.rotation.y = timer * 0.0005
   }
+
 
   animate()
 }
@@ -330,6 +341,8 @@ function homeLaunch(){
 
 function openPlayer(data) {
   document.querySelectorAll('.player').forEach(player => {
+
+    isPaused = true
 
     gsap.killTweensOf(player)
 
@@ -375,6 +388,7 @@ function openPlayer(data) {
 
     })
     currentClose.addEventListener('click', event => {
+      isPaused = false
       currentTap.style.display = 'none'
       tl = gsap.timeline()
       tl
