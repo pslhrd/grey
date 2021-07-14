@@ -161,18 +161,17 @@ body {
 
     .wrapper {
       overflow: hidden;
-      min-height: 5.8vw
+      min-height: 5vw
     }
 
     ul li {
       position: relative;
       display: inline-block;
-      font-size: 5.3vw;
-      line-height: 5.3vw;
+      font-size: 5vw;
+      line-height: 5vw;
       list-style: none;
       text-transform: uppercase;
       transition: opacity 0.1s;
-      opacity: 0;
 
       &:hover {
         cursor: pointer;

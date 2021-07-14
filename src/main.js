@@ -11,7 +11,10 @@ import thumbnail from '/src/assets/images/thumbnail.jpg'
 
 function lerp (start, end, amt) { return (1 - amt) * start + amt * end }
 const loader = new GLTFLoader()
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+const isSafari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+                 navigator.userAgent &&
+                 navigator.userAgent.indexOf('CriOS') == -1 &&
+                 navigator.userAgent.indexOf('FxiOS') == -1;
 const isMobile = {
   Android: function () {
     return navigator.userAgent.match(/Android/i)
@@ -40,7 +43,7 @@ const body = document.querySelector('body')
 let imgLoad = new imagesLoaded(body)
 const preloader = document.querySelector('.preloader')
 scene = new THREE.Scene()
-gsap.set('.menu ul li', {autoAlpha:0, y:'100%'})
+gsap.set('.menu ul li', {y:'100%'})
 gsap.set('.logo, footer', {autoAlpha:0})
 gsap.set('.video', {y:'40%', autoAlpha:0})
 
@@ -208,7 +211,7 @@ function sceneInit() {
     })
   }
 
-  if (isMobile.any() && isSafari === false) {
+  if (isSafari === false) {
     console.log('chrome')
     chromeVideos()
   } else {
@@ -273,7 +276,7 @@ function sceneInit() {
   .from(camera.position, {z:50, duration:2, ease:'expo.out'}, 0.5)
   .fromTo([letter1.scale, letter2.scale, letter3.scale, letter4.scale],{y:0, x:0, z:0}, {y:1, x:1, z:1, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
   .fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation],{x:0}, {x:-Math.PI * 2, duration:1.2, ease:'expo.out', stagger:0.1}, 1)
-  .to('.menu ul li', {y:'0%', autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.09}, '-=1.2')
+  .to('.menu ul li', {y:'0%', autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.06}, '-=1.2')
   .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 
 
