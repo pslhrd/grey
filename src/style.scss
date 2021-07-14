@@ -160,7 +160,8 @@ body {
     }
 
     .wrapper {
-      overflow: hidden;
+      overflow-y: hidden;
+      overflow-x: visible;
       min-height: 5vw
     }
 
@@ -172,6 +173,7 @@ body {
       list-style: none;
       text-transform: uppercase;
       transition: opacity 0.1s;
+      // text-shadow: $main 0px 0 10px;;
 
       &:hover {
         cursor: pointer;
