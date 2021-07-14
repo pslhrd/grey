@@ -42,6 +42,7 @@ const preloader = document.querySelector('.preloader')
 scene = new THREE.Scene()
 gsap.set('.menu ul li', {autoAlpha:0, y:'100%'})
 gsap.set('.logo, footer', {autoAlpha:0})
+gsap.set('.video', {y:'40%', autoAlpha:0})
 
 // GLTF
 loader.load(
@@ -295,7 +296,7 @@ function mobileLaunch() {
   let tl = gsap.timeline()
 
   tl
-  .fromTo('.video', {y:'40%', autoAlpha:0}, {y:'0%', autoAlpha:1, ease:'power4.out', duration:1.4, stagger: 0.2}, 0.5)
+  .to('.video', {y:'0%', autoAlpha:1, ease:'power4.out', duration:1.4, stagger: 0.2}, 0.5)
   .to('.menu ul li', {y:'0%', autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.09},  0.5)
   .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 }
