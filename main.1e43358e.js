@@ -46946,8 +46946,8 @@ return ImagesLoaded;
 
 });
 
-},{"ev-emitter":"node_modules/ev-emitter/ev-emitter.js"}],"src/assets/videos/vitaly1.mp4":[function(require,module,exports) {
-module.exports = "/vitaly1.d8e2341d.mp4";
+},{"ev-emitter":"node_modules/ev-emitter/ev-emitter.js"}],"src/assets/images/thumbnail.jpg":[function(require,module,exports) {
+module.exports = "/thumbnail.7db3f875.jpg";
 },{}],"src/main.js":[function(require,module,exports) {
 "use strict";
 
@@ -46967,7 +46967,7 @@ var _grey = _interopRequireDefault(require("/src/assets/models/grey2.gltf"));
 
 var _imagesloaded = _interopRequireDefault(require("imagesloaded"));
 
-var _vitaly = _interopRequireDefault(require("/src/assets/videos/vitaly1.mp4"));
+var _thumbnail = _interopRequireDefault(require("/src/assets/images/thumbnail.jpg"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -47053,8 +47053,9 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(0.5);
-  document.body.appendChild(renderer.domElement); // CAMERA
+  renderer.setPixelRatio(1);
+  console.log(renderer); // document.body.appendChild(renderer.domElement)
+  // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
   camera.position.z = 5;
@@ -47072,11 +47073,8 @@ function sceneInit() {
   light2.position.set(0, 10, 10);
   scene.add(light, light2); // VIDEOS
 
-  video = document.getElementById('video');
-  videoTexture = new THREE.VideoTexture(video);
-  videoTexture.needsUpdate;
-  videoTexture.crossOrigin = 'anonymous';
-  videoTexture.src = "src to video";
+  videoTexture = new THREE.TextureLoader().load(_thumbnail.default);
+  console.log(_thumbnail.default);
   planeGeometry = new THREE.PlaneGeometry(1, 1);
   planeTexture = new THREE.MeshStandardMaterial({
     map: videoTexture
@@ -47088,18 +47086,18 @@ function sceneInit() {
 
   function selectVideos() {
     document.querySelectorAll('.menu ul li').forEach(function (links) {
-      var videos = document.querySelectorAll('.videos video');
+      var videos = document.querySelectorAll('.video');
       links.addEventListener('mouseenter', function (event) {
         var menuData = links.getAttribute('data');
         videos.forEach(function (video) {
           var videoData = video.getAttribute('data');
 
           if (menuData === videoData) {
-            videoTexture = new THREE.VideoTexture(video);
+            var img = video.querySelector('img').src;
+            console.log(img);
+            videoTexture = new THREE.TextureLoader().load(img);
             plane.material.map = videoTexture;
-            video.muted = 'true';
-            video.setAttribute('muted', '');
-            video.play();
+            console.log(videoTexture); // plane.material.map = videoTexture
 
             _gsap.default.to(plane.scale, {
               y: 1,
@@ -47116,11 +47114,7 @@ function sceneInit() {
               duration: 1.2,
               ease: 'expo.out',
               stagger: 0.1
-            }); // gsap.set(video, {autoAlpha:0})
-            // video.querySelector('video').play()
-            // video.style.display = 'block'
-            // gsap.to(video, {autoAlpha:1, duration:0.6})
-
+            });
           }
         });
       });
@@ -47130,10 +47124,6 @@ function sceneInit() {
           var videoData = video.getAttribute('data');
 
           if (menuData === videoData) {
-            video.pause();
-            plane.material.map = 0;
-            console.log(plane.material.map);
-
             _gsap.default.to(plane.scale, {
               y: 0,
               x: 0,
@@ -47158,9 +47148,7 @@ function sceneInit() {
               duration: 1.2,
               ease: 'expo.out',
               stagger: 0.1
-            }); // gsap.set(video, {autoAlpha:0})
-            // video.style.display = 'none'
-
+            });
           }
         });
       });
@@ -47174,8 +47162,8 @@ function sceneInit() {
   });
   effect.setSize(window.innerWidth, window.innerHeight);
   effect.domElement.style.color = '#454545';
-  effect.domElement.style.backgroundColor = 'none'; // document.body.appendChild(effect.domElement)
-
+  effect.domElement.style.backgroundColor = 'none';
+  document.body.appendChild(effect.domElement);
   effect.domElement.style.position = 'absolute';
   effect.domElement.style.top = '0px';
   var table = effect.domElement.querySelector('table');
@@ -47231,7 +47219,7 @@ function sceneInit() {
 
   function render() {
     var timer = Date.now() - start;
-    renderer.render(scene, camera);
+    effect.render(scene, camera);
     grey.rotation.y = timer * 0.0005;
   }
 
@@ -47256,7 +47244,7 @@ function homeLaunch() {
     });
   }
 }
-},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js","/src/assets/videos/vitaly1.mp4":"src/assets/videos/vitaly1.mp4"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js","/src/assets/images/thumbnail.jpg":"src/assets/images/thumbnail.jpg"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -47284,7 +47272,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52519" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53048" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
