@@ -47053,8 +47053,8 @@ function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(0.5); // document.body.appendChild(renderer.domElement)
-  // CAMERA
+  renderer.setPixelRatio(0.5);
+  document.body.appendChild(renderer.domElement); // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
   camera.position.z = 5;
@@ -47100,7 +47100,6 @@ function sceneInit() {
             video.muted = 'true';
             video.setAttribute('muted', '');
             video.play();
-            video.play().catch(console.error);
 
             _gsap.default.to(plane.scale, {
               y: 1,
@@ -47132,6 +47131,8 @@ function sceneInit() {
 
           if (menuData === videoData) {
             video.pause();
+            plane.material.map = 0;
+            console.log(plane.material.map);
 
             _gsap.default.to(plane.scale, {
               y: 0,
@@ -47173,8 +47174,8 @@ function sceneInit() {
   });
   effect.setSize(window.innerWidth, window.innerHeight);
   effect.domElement.style.color = '#454545';
-  effect.domElement.style.backgroundColor = 'none';
-  document.body.appendChild(effect.domElement);
+  effect.domElement.style.backgroundColor = 'none'; // document.body.appendChild(effect.domElement)
+
   effect.domElement.style.position = 'absolute';
   effect.domElement.style.top = '0px';
   var table = effect.domElement.querySelector('table');
@@ -47230,7 +47231,7 @@ function sceneInit() {
 
   function render() {
     var timer = Date.now() - start;
-    effect.render(scene, camera);
+    renderer.render(scene, camera);
     grey.rotation.y = timer * 0.0005;
   }
 
@@ -47283,7 +47284,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52255" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52519" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
