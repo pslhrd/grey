@@ -46946,7 +46946,9 @@ return ImagesLoaded;
 
 });
 
-},{"ev-emitter":"node_modules/ev-emitter/ev-emitter.js"}],"src/main.js":[function(require,module,exports) {
+},{"ev-emitter":"node_modules/ev-emitter/ev-emitter.js"}],"src/assets/videos/vitaly1.mp4":[function(require,module,exports) {
+module.exports = "/vitaly1.d8e2341d.mp4";
+},{}],"src/main.js":[function(require,module,exports) {
 "use strict";
 
 var THREE = _interopRequireWildcard(require("three"));
@@ -46964,6 +46966,8 @@ var _gsap = _interopRequireDefault(require("gsap"));
 var _grey = _interopRequireDefault(require("/src/assets/models/grey2.gltf"));
 
 var _imagesloaded = _interopRequireDefault(require("imagesloaded"));
+
+var _vitaly = _interopRequireDefault(require("/src/assets/videos/vitaly1.mp4"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46998,7 +47002,7 @@ var isMobile = {
   }
 };
 var scene, camera, controls, renderer, effect;
-var grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4;
+var grey, light, amb, mouseX, mouseY, letter1, letter2, letter3, letter4, light2, video, videoTexture, planeGeometry, planeTexture, plane;
 var body = document.querySelector('body');
 var preloader = document.querySelector('.preloader');
 scene = new THREE.Scene(); // GLTF
@@ -47007,11 +47011,12 @@ loader.load(_grey.default, function (gltf) {
   scene.add(gltf.scene.children[0]); // sceneInit()
 
   if (isSafari === true) {
-    homeLaunch();
-    menuLaunch(); // sceneInit()
-  } else {
+    homeLaunch(); // menuLaunch()
+
     sceneInit();
-    menuLaunch();
+  } else {
+    sceneInit(); // menuLaunch()
+
     homeLaunch(); // movingImages()
   }
 });
@@ -47042,17 +47047,14 @@ var imgLoad = new _imagesloaded.default(body);
 imgLoad.on('done', function (instance, image) {
   var tl = _gsap.default.timeline();
 
-  tl.to(preloader, {
-    autoAlpha: 0,
-    duration: 1
-  }, 1);
+  tl; // .to(preloader, {autoAlpha:0, duration:1}, 2)
 });
 
 function sceneInit() {
   // RENDERER
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(0.1); // document.body.appendChild(renderer.domElement)
+  renderer.setPixelRatio(0.5); // document.body.appendChild(renderer.domElement)
   // CAMERA
 
   camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight);
@@ -47064,12 +47066,110 @@ function sceneInit() {
   var particles = createParticleSystem(200);
   scene.add(particles); // LIGHTS
 
-  light = new THREE.PointLight(0xffffff, 2, 0, 1);
+  light = new THREE.PointLight(0xffffff, 1.2, 0, 1);
+  light2 = new THREE.PointLight(0xffffff, 1.2, 0, 1);
   amb = new THREE.AmbientLight(0xffffff, 0.5);
-  light.position.set(5, 5, 0);
-  scene.add(amb, light); // EFFECTS
+  light.position.set(0, -10, -10);
+  light2.position.set(0, 10, 10);
+  scene.add(light, light2); // VIDEOS
 
-  effect = new _AsciiEffect.AsciiEffect(renderer, ' .-#', {
+  video = document.getElementById('video');
+  videoTexture = new THREE.VideoTexture(video);
+  videoTexture.needsUpdate;
+  videoTexture.crossOrigin = 'anonymous';
+  videoTexture.src = "src to video";
+  planeGeometry = new THREE.PlaneGeometry(1, 1);
+  planeTexture = new THREE.MeshStandardMaterial({
+    map: videoTexture
+  });
+  plane = new THREE.Mesh(planeGeometry, planeTexture);
+  plane.position.set(-0.09, 0, 2.5);
+  plane.scale.set(0, 0, 0);
+  scene.add(plane);
+
+  function selectVideos() {
+    document.querySelectorAll('.menu ul li').forEach(function (links) {
+      var videos = document.querySelectorAll('.videos video');
+      links.addEventListener('mouseenter', function (event) {
+        var menuData = links.getAttribute('data');
+        videos.forEach(function (video) {
+          var videoData = video.getAttribute('data');
+
+          if (menuData === videoData) {
+            videoTexture = new THREE.VideoTexture(video);
+            plane.material.map = videoTexture;
+            video.muted = 'true';
+            video.setAttribute('muted', '');
+            video.play();
+            video.play().catch(console.error);
+
+            _gsap.default.to(plane.scale, {
+              y: 1,
+              x: 1,
+              z: 1,
+              duration: 1.2,
+              ease: 'expo.out'
+            });
+
+            _gsap.default.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {
+              y: 0,
+              x: 0,
+              z: 0,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            }); // gsap.set(video, {autoAlpha:0})
+            // video.querySelector('video').play()
+            // video.style.display = 'block'
+            // gsap.to(video, {autoAlpha:1, duration:0.6})
+
+          }
+        });
+      });
+      links.addEventListener('mouseleave', function (event) {
+        var menuData = links.getAttribute('data');
+        videos.forEach(function (video) {
+          var videoData = video.getAttribute('data');
+
+          if (menuData === videoData) {
+            video.pause();
+
+            _gsap.default.to(plane.scale, {
+              y: 0,
+              x: 0,
+              z: 0,
+              duration: 1,
+              ease: 'expo.out'
+            });
+
+            _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
+              x: 0
+            }, {
+              x: -Math.PI * 2,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            });
+
+            _gsap.default.to([letter1.scale, letter2.scale, letter3.scale, letter4.scale], {
+              y: 1,
+              x: 1,
+              z: 1,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.1
+            }); // gsap.set(video, {autoAlpha:0})
+            // video.style.display = 'none'
+
+          }
+        });
+      });
+    });
+  }
+
+  selectVideos(); // EFFECTS
+
+  effect = new _AsciiEffect.AsciiEffect(renderer, ' .-#&@/+', {
     invert: true
   });
   effect.setSize(window.innerWidth, window.innerHeight);
@@ -47078,16 +47178,21 @@ function sceneInit() {
   document.body.appendChild(effect.domElement);
   effect.domElement.style.position = 'absolute';
   effect.domElement.style.top = '0px';
+  var table = effect.domElement.querySelector('table');
+  table.style.display = 'table';
+
+  _gsap.default.set(effect.domElement, {
+    scale: 1.05
+  });
+
   effect.domElement.style.left = '0px';
   effect.domElement.style.zIndex = '1';
 
   if (isMobile.any()) {
-    camera.position.z = 10;
-  } else {
-    effect.domElement.style.position = 'absolute';
+    camera.position.z = 8;
   } // CONTROLS
   // controls = new TrackballControls(camera, effect.domElement)
-  // controls = new OrbitControls(camera, effect.domElement)
+  // controls = new OrbitControls(camera, renderer.domElement)
   // controls.enableZoom = true
   // controls.enablePan = true
   // controls.enableDamping = true
@@ -47104,44 +47209,20 @@ function sceneInit() {
 
   window.addEventListener('resize', onWindowResize, false);
   grey = scene.children[0];
+  grey.position.set(-0.09, 0, 1);
   letter1 = grey.children[0];
   letter2 = grey.children[1];
   letter3 = grey.children[2];
   letter4 = grey.children[3]; // INTRO
-
-  var tl = _gsap.default.timeline();
-
-  tl.set('.menu ul li', {
-    autoAlpha: 0
-  }).set('.video', {
-    autoAlpha: 0,
-    scale: 0.8
-  }).set('.logo, footer', {
-    autoAlpha: 0
-  }).from(camera.position, {
-    z: 100,
-    duration: 2,
-    ease: 'power4.out'
-  }, 2).to('.video', {
-    scale: 1,
-    autoAlpha: 1,
-    duration: 1.2,
-    ease: 'power4.out',
-    stagger: {
-      ease: 'power1.in',
-      each: 0.2
-    }
-  }, '-=1.2').to('.menu ul li', {
-    autoAlpha: 1,
-    duration: 1.2,
-    ease: 'power3.out',
-    stagger: 0.1
-  }, '-=2').to('.logo, footer', {
-    autoAlpha: 1,
-    duration: 1.2,
-    ease: 'power4.out',
-    stagger: 0.1
-  }, '-=1.6');
+  // let tl = gsap.timeline()
+  // tl
+  // .set('.menu ul li', {autoAlpha:0})
+  // .set('.video', {autoAlpha:0, scale:0.8})
+  // .set('.logo, footer', {autoAlpha:0})
+  // .from(camera.position, {z:100, duration:2, ease:'power4.out'}, 2)
+  // .to('.video', {scale:1, autoAlpha:1, duration:1.2, ease:'power4.out', stagger:{ease:'power1.in', each:0.2}}, '-=1.2')
+  // .to('.menu ul li', {autoAlpha:1, duration:1.2, ease:'power3.out', stagger:0.1}, '-=2')
+  // .to('.logo, footer', {autoAlpha:1, duration:1.2, ease:'power4.out', stagger:0.1}, '-=1.6')
 
   function animate() {
     requestAnimationFrame(animate);
@@ -47185,16 +47266,14 @@ function menuLaunch() {
         var videoData = video.getAttribute('data');
 
         if (menuData === videoData) {
-          if (isMobile) {
-            _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
-              x: 0
-            }, {
-              x: -Math.PI * 2,
-              duration: 2,
-              ease: 'expo.out',
-              stagger: 0.1
-            });
-          }
+          _gsap.default.fromTo([letter1.rotation, letter2.rotation, letter3.rotation, letter4.rotation], {
+            x: 0
+          }, {
+            x: -Math.PI * 2,
+            duration: 2,
+            ease: 'expo.out',
+            stagger: 0.1
+          });
 
           _gsap.default.set(video, {
             autoAlpha: 0
@@ -47260,6 +47339,7 @@ function openPlayer(data) {
         autoAlpha: 1
       }).add(function () {
         player.style.display = 'block';
+        currentTap.style.display = 'block';
       }).to(currentBg, {
         autoAlpha: 1,
         duration: 0.8,
@@ -47287,6 +47367,7 @@ function openPlayer(data) {
       if (videoStatus === 'playing') {
         currentPlayer.pause();
         videoStatus = 'paused';
+        currentTap.style.display = 'block';
       } else {
         currentPlayer.play();
         videoStatus = 'playing';
@@ -47321,6 +47402,7 @@ function openPlayer(data) {
         currentPlayer.pause();
         currentPlayer.currentTime = 0;
         videoStatus = 'stopped';
+        currentTap.style.display = 'block';
       });
     });
   });
@@ -47342,7 +47424,7 @@ function movingImages() {
     });
   });
 }
-},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"three":"node_modules/three/build/three.module.js","three/examples/jsm/effects/AsciiEffect":"node_modules/three/examples/jsm/effects/AsciiEffect.js","three/examples/jsm/controls/OrbitControls":"node_modules/three/examples/jsm/controls/OrbitControls.js","three/examples/jsm/loaders/GLTFLoader":"node_modules/three/examples/jsm/loaders/GLTFLoader.js","three/examples/jsm/controls/TrackballControls":"node_modules/three/examples/jsm/controls/TrackballControls.js","gsap":"node_modules/gsap/index.js","/src/assets/models/grey2.gltf":"src/assets/models/grey2.gltf","imagesloaded":"node_modules/imagesloaded/imagesloaded.js","/src/assets/videos/vitaly1.mp4":"src/assets/videos/vitaly1.mp4"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -47370,7 +47452,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49633" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49625" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
